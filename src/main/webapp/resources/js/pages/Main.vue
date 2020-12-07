@@ -8,6 +8,18 @@
             </tr>
         </table><br>
         <v-btn color="yellow" href="/service">Просмотреть все услуги</v-btn>
+        <h1>Сотрудники клиники</h1>
+        <v-card class="my-2" width="100%" v-for="employee in employeePreview" :key="employee.name">
+            <v-card-title>{{employee.name}}</v-card-title>
+            <v-card-text>
+                <h3>Должность: {{employee.position}}</h3>
+                <h3>Образование: {{employee.education}}</h3>
+                <h3>Специализация: <span v-for="object in employee.specs">
+                       {{object.specialization}}
+                   </span></h3>
+            </v-card-text>
+        </v-card><br>
+        <v-btn color="yellow" href="/employee">Просмотреть всех сотрудников</v-btn>
     </v-container>
 </template>
 
@@ -16,7 +28,7 @@
         name: "Main",
         data(){
             return{
-                servicePreview:[]
+                servicePreview:[],employeePreview:[]
             }
         },
         methods : {
@@ -24,10 +36,17 @@
                 this.$http.get('/api/service/preview').then(function (response) {
                     this.servicePreview = response.data.content;
                 })
+            },
+            getEmployeePreview(){
+                this.$http.get('/api/employee/preview').then(function (response) {
+                    this.employeePreview = response.body;
+                    console.log(response.body);
+                })
             }
         },
         created() {
             this.getServicePreview();
+            this.getEmployeePreview();
         }
     }
 </script>

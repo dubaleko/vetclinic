@@ -31,7 +31,7 @@
         methods:{
             reg(){
                 this.$v.$touch()
-                if (this.$v.$invalid){
+                if (this.$v.$invalid || !this.userName.match('^[а-яА-ЯёЁa-zA-Z0-9]+$')){
                     return
                 }
                 else {

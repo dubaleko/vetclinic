@@ -2,6 +2,7 @@ package com.dubaleko.vetclinic.controller;
 
 import com.dubaleko.vetclinic.entity.User;
 import com.dubaleko.vetclinic.service.UserDetailServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,13 +12,8 @@ import java.io.IOException;
 @RestController
 @RequestMapping("api/users")
 public class UserController {
-
-    private final UserDetailServiceImpl userDetailService;
-
-    public UserController(UserDetailServiceImpl userDetailService) {
-
-        this.userDetailService = userDetailService;
-    }
+    @Autowired
+    private  UserDetailServiceImpl userDetailService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)

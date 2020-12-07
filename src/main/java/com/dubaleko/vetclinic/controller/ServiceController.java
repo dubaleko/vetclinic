@@ -9,8 +9,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -25,11 +23,13 @@ public class ServiceController {
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public Page list(@RequestParam int page, @RequestParam Optional<String> type){
         return  service.getServices(page,type);
     }
 
     @GetMapping("preview")
+    @ResponseStatus(HttpStatus.OK)
     public Page<Service> getFive(){
         return serviceRepository.findAll(PageRequest.of(0, 6,
                 Sort.by(Sort.Direction.ASC, "serviceName")));

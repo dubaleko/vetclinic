@@ -13,6 +13,6 @@ Vue.use(VueResource)
 new Vue({
     el: '#app',
     router,
-    vuetify: new Vuetify({}),
+    vuetify: new Vuetify(),
     render: a => a(App),
 })

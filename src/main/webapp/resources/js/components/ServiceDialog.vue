@@ -8,13 +8,18 @@
                 <span class="headline" v-text="action"/>
             </v-card-title>
             <v-card-text>
-                <h5 class="validationError" v-if="!$v.serviceType.required && $v.serviceType.$dirty">Тип услуги не может быть пустым</h5>
+                <h5 class="validationError" v-if="!$v.serviceType.required && $v.serviceType.$dirty">
+                    Тип услуги не может быть пустым</h5>
                 <v-select v-model="serviceType" :items="typeNames" label="Тип услуги"/>
-                <h5 class="validationError" v-if="!$v.serviceName.required && $v.serviceName.$dirty">Имя сервиса не может быть пустым</h5>
-                <h5 class="validationError" v-else-if="$v.serviceName.$dirty && !serviceName.match('^[а-яА-ЯёЁ0-9()-/ ]+$')">Имя допускает буквы кириллицы, цифры, круглые скобки, тире и косую черту</h5>
+                <h5 class="validationError" v-if="!$v.serviceName.required && $v.serviceName.$dirty">
+                    Имя сервиса не может быть пустым</h5>
+                <h5 class="validationError" v-else-if="$v.serviceName.$dirty && !serviceName.match('^[а-яА-ЯёЁ0-9()-/ ]+$')">
+                    Имя допускает буквы кириллицы, цифры, круглые скобки, тире и косую черту</h5>
                 <v-text-field v-model="serviceName" placeholder="Введите имя услуги" label="Имя услуги"/>
-                <h5 class="validationError" v-if="!$v.serviceCost.required && $v.serviceCost.$dirty">Цена услуги не может быть пустой</h5>
-                <h5 class="validationError" v-else-if="$v.serviceCost.$dirty && !serviceCost.match('^[0-9]*[.]?[0-9]+$')">Цена услуги может быть только числом</h5>
+                <h5 class="validationError" v-if="!$v.serviceCost.required && $v.serviceCost.$dirty">
+                    Цена услуги не может быть пустой</h5>
+                <h5 class="validationError" v-else-if="$v.serviceCost.$dirty && !serviceCost.match('^[0-9]*[.]?[0-9]+$')">
+                    Цена услуги может быть только числом</h5>
                 <v-text-field v-model="serviceCost" placeholder="Введите цену услуги" label="Цена услуги"/>
             </v-card-text>
             <v-card-actions>
@@ -26,16 +31,16 @@
 </template>
 
 <script>
-    import {required ,} from 'vuelidate/lib/validators'
+    import {required} from 'vuelidate/lib/validators'
     export default {
         props:['action','types','typeNames','service'],
         name: "ServiceDialog",
         data: () => ({
-            dialog: false, id : '', errorMessage : '', myService: null,
+            dialog: false, id : '', myService: null,
             serviceType : '', serviceName: '', serviceCost: ''
         }),
         validations:{
-            serviceType: {required ,},
+            serviceType: {required},
             serviceName: {required},
             serviceCost: {required},
         },
@@ -52,7 +57,6 @@
         },
         methods :{
             close(){
-                this.errorMessage = '';
                 this.dialog = false;
             },
             temporarySave(){
@@ -67,7 +71,8 @@
                             serviceType = element;
                         }
                     })
-                    let service = {id : this.id ,serviceName: this.serviceName, serviceCost: this.serviceCost,serviceType:serviceType}
+                    let service = {id : this.id ,serviceName: this.serviceName, serviceCost: this.serviceCost,
+                        serviceType:serviceType}
                     if (this.action == "Добавить новую услугу"){
                         this.$http.post('/api/service',service).then(function (response) {
                             window.location.href = '/service';

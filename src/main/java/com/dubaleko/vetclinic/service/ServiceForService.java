@@ -32,9 +32,9 @@ public class ServiceForService {
                         typeId = serviceType.getId().toString();
                     }
                 }
-                return serviceRepository.findServiceByPage(typeId, PageRequest.of(page - 1, 20, Sort.Direction.ASC, "serviceName"));
+                return serviceRepository.findServiceByPage(typeId, PageRequest.of(page - 1, 19, Sort.Direction.ASC, "serviceName"));
             }
         }
-        return serviceRepository.findAllServiceByPage(PageRequest.of(page-1,20, Sort.Direction.ASC,"serviceName"));
+        return serviceRepository.findAllServiceByPage(PageRequest.of(page-1,19, Sort.Direction.ASC,"serviceName"));
     }
 }
