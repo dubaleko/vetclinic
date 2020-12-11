@@ -17,7 +17,7 @@
                    </span></h3>
                </v-card-text>
                <v-card-actions>
-                   <v-btn color="yellow">Записаться на прием</v-btn>
+                   <v-btn color="blue" class="white--text"  :href="employee.url">Запись на прием</v-btn>
                    <div v-if="user">
                        <employee-dialog v-if="user.role == 'ADMIN'" action="Обновить" :spec="employeeSpec"
                        :spec-name="specialization" :employee="employee"/>
@@ -74,6 +74,9 @@
                     this.employees = response.body.pageList;
                     this.totalPages = response.body.pageCount;
                     this.page = response.body.page+1;
+                    this.employees.forEach(element=>{
+                        element.url="/order?employee="+element.id;
+                    })
                 })
             },
             deleteEmployee(id){

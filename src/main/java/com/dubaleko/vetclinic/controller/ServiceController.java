@@ -50,6 +50,6 @@ public class ServiceController {
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     public void delete(@RequestParam long id){
-        serviceRepository.delete(serviceRepository.getOne(id));
+        serviceRepository.deleteById(id);
     }
 }

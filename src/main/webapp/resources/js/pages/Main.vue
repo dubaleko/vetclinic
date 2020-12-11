@@ -7,7 +7,7 @@
                 <td align="right">{{service.serviceCost.toFixed(2)}} р.</td>
             </tr>
         </table><br>
-        <v-btn color="yellow" href="/service">Просмотреть все услуги</v-btn>
+        <v-btn color="blue" class="white--text" href="/service">Просмотреть все услуги</v-btn>
         <h1>Сотрудники клиники</h1>
         <v-card class="my-2" width="100%" v-for="employee in employeePreview" :key="employee.name">
             <v-card-title>{{employee.name}}</v-card-title>
@@ -19,7 +19,8 @@
                    </span></h3>
             </v-card-text>
         </v-card><br>
-        <v-btn color="yellow" href="/employee">Просмотреть всех сотрудников</v-btn>
+        <v-btn class="mr-4" href="/order">Запись на прием</v-btn>
+        <v-btn color="blue" class="white--text" href="/employee">Просмотреть всех сотрудников</v-btn>
     </v-container>
 </template>
 
@@ -40,7 +41,6 @@
             getEmployeePreview(){
                 this.$http.get('/api/employee/preview').then(function (response) {
                     this.employeePreview = response.body;
-                    console.log(response.body);
                 })
             }
         },

@@ -37,18 +37,18 @@ public class EmployeeController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public  void  addNewEmployee(@RequestBody Employee employee){
-        employeeRepository.save(employee);
+        employeeService.save(employee);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public void  updateEmployee(@RequestBody Employee employee){
-        employeeRepository.save(employee);
+        employeeService.save(employee);
     }
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     public void delete(@RequestParam long id){
-        employeeRepository.delete(employeeRepository.getOne(id));
+        employeeRepository.deleteById(id);
     }
 }

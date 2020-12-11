@@ -2,23 +2,20 @@
     <v-app>
         <v-app-bar app>
             <v-spacer></v-spacer>
+            <v-spacer v-if="!user"></v-spacer>
             <v-btn text href="/">
                 <v-toolbar-title>Братья Меньшие</v-toolbar-title>
             </v-btn>
             <v-spacer></v-spacer>
-            <div v-if="!loginPage">
-                <div v-if="user">
-                    <span>{{user.userName}}</span>
-                    <v-btn href="/logout" icon>
-                        <v-icon>exit_to_app</v-icon>
-                    </v-btn>
-                </div>
-                <div v-if="!user">
-                    <span>Войти</span>
-                    <v-btn href="/login" icon>
-                        <v-icon>login</v-icon>
-                    </v-btn>
-                </div>
+            <div v-if="user">
+                <span>{{user.userName}}</span>
+                <v-btn href="/logout" icon>
+                    <v-icon>exit_to_app</v-icon>
+                </v-btn>
+            </div>
+            <div v-if="!user">
+                <login-dialog/>
+                <registration-dialog/>
             </div>
         </v-app-bar>
         <v-main>
@@ -28,10 +25,12 @@
 </template>
 
 <script>
+    import LoginDialog from "../components/LoginDialog.vue";
+    import RegistrationDialog from "../components/RegistrationDialog.vue";
     export default {
+        components: {LoginDialog,RegistrationDialog},
         data(){
             return{
-                loginPage:false,
                 user:null
             }
         },
@@ -45,14 +44,10 @@
             },
         },
         created() {
-            if (window.location.pathname == "/login" || window.location.pathname == "/registration"){
-                this.loginPage = true;
-            }
             this.getUser();
         }
     }
 </script>
 
 <style scoped>
-
 </style>

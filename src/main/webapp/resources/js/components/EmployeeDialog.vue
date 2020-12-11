@@ -24,6 +24,9 @@
                 <h5 class="validationError" v-if="!$v.employeeSpecName.required && $v.employeeSpecName.$dirty">
                     Специализация не может быть пустой</h5>
                 <v-select multiple chips v-model="employeeSpecName" :items="specName" label="Специализация"/>
+                <h5 class="validationError" v-if="!$v.employeeWorkDay.required && $v.employeeWorkDay.$dirty">
+                    У сотрудника должен быть хотя бы 1 рабочий день</h5>
+                <v-select multiple chips v-model="employeeWorkDay" :items="daysName" label="Рабочие дни"/>
             </v-card-text>
             <v-card-actions>
                 <v-btn color="blue darken-1" text @click="temporarySave">Сохранить</v-btn>
@@ -39,11 +42,13 @@
         name: "EmployeeDialog",
         props:['action','specName','spec','employee'],
         data: () => ({
-            dialog: false, employeeSpecName : [], position : '', education: '',
+            dialog: false,  position : '', education: '', employeeWorkDay : [],
             id: '', name: '',  onlyChar: '^[а-яА-ЯёЁ ]+$', myEmployee: null,
+            employeeSpecName : [], daysName :['Понедельник','Вторник','Среда','Четверг',
+            'Пятница','Суббота','Воскресенье']
         }),
         validations:{
-            name: {required}, education: {required},
+            name: {required}, education: {required}, employeeWorkDay: {required},
             position: {required}, employeeSpecName: {required}
         },
         updated(){
@@ -53,11 +58,14 @@
                 this.position = this.employee.position;
                 this.education = this.employee.education;
                 if (this.employee.specs) {
-                    if (this.employeeSpecName.length < 1) {
-                        this.employee.specs.forEach(element => {
-                            this.employeeSpecName.push(element.specialization);
-                        })
-                    }
+                    this.employee.specs.forEach(element => {
+                        this.employeeSpecName.push(element.specialization);
+                    })
+                }
+                if (this.employee.days){
+                    this.employee.days.forEach(element =>{
+                        this.employeeWorkDay.push(element.dayName);
+                    })
                 }
                 this.myEmployee = this.employee;
             }
@@ -72,6 +80,7 @@
                     return
                 }else {
                     let employeeSpecs = [];
+                    let employeeDays = [];
                     this.spec.forEach(element=>{
                         this.employeeSpecName.forEach(specName=>{
                             if (element.specialization == specName){
@@ -79,8 +88,12 @@
                             }
                         })
                     })
+                    this.employeeWorkDay.forEach(dayName=>{
+                        let object = {id:null,dayName:dayName,employees:null}
+                        employeeDays.push(object);
+                    })
                     let employee = {id : this.id ,name: this.name, position:this.position,
-                        education: this.education, specs: employeeSpecs};
+                        education: this.education, specs: employeeSpecs,days:employeeDays};
                     if (this.action == "Добавить нового сотрудника"){
                         this.$http.post('/api/employee',employee).then(function (response) {
                             window.location.href = '/employee';

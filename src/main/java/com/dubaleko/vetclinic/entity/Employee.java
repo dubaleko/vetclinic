@@ -6,11 +6,12 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Data
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,5 +24,11 @@ public class Employee {
             joinColumns = @JoinColumn(name = "employee_id"),
             inverseJoinColumns = @JoinColumn(name = "spec_id")
     )
-    private List<Specialization> specs;
+    private Set<Specialization> specs;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "employee_work_days",
+            joinColumns = @JoinColumn(name = "employee_id"),
+            inverseJoinColumns = @JoinColumn(name = "day_id")
+    )
+    private Set<WeekDay> days;
 }

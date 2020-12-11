@@ -23,13 +23,13 @@ public class ServiceForService {
     }
 
     public Page getServices(int page, Optional<String> type){
-        String typeId = "";
+        Long typeId = 0L;
         if (!type.isEmpty()) {
             if (!type.get().equals("Все услуги")) {
                 List<ServiceType> serviceTypes = serviceTypeRepository.findAll();
                 for (ServiceType serviceType : serviceTypes) {
                     if (serviceType.getServiceTypeName().equals(type.get())) {
-                        typeId = serviceType.getId().toString();
+                        typeId = serviceType.getId();
                     }
                 }
                 return serviceRepository.findServiceByPage(typeId, PageRequest.of(page - 1, 19, Sort.Direction.ASC, "serviceName"));

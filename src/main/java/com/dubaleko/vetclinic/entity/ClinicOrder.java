@@ -1,6 +1,5 @@
 package com.dubaleko.vetclinic.entity;
 
-import com.dubaleko.vetclinic.entity.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,19 +7,17 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Data
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "users")
-public class User {
+public class ClinicOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String userName;
-
-    private String password;
-
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "userId")
+    User user;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "date")
+    ReceptionDate receptionDate;
 }

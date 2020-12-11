@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ServiceRepository extends JpaRepository<Service,Long> {
     @Query("select s from Service s where type_id = ?1")
-    Page<Service> findServiceByPage(String typeId, Pageable pageable);
+    Page<Service> findServiceByPage(Long typeId, Pageable pageable);
 
     @Query("select s from Service s")
     Page<Service> findAllServiceByPage(Pageable pageable);
