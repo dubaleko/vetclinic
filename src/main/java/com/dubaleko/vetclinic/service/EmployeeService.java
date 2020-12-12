@@ -37,7 +37,7 @@ public class EmployeeService {
         this.receptionDateRepository = receptionDateRepository;
     }
 
-    public PagedListHolder<EmployeeDto> getEmployees(int page, Optional<String> spec){
+    public PagedListHolder<EmployeeDto> getEmployees(int page, Optional<String> spec,Optional<Integer> size){
         List<Employee> employees;
         if (spec.isEmpty() || spec.get().equals("Любая специализация")) {
             employees = employeeRepository.findAll();
@@ -52,7 +52,10 @@ public class EmployeeService {
             Collections.sort(employeeDto.getDays(),new DayComparator());
         }
         PagedListHolder<EmployeeDto> pagedListHolder = new PagedListHolder<EmployeeDto>(employeeDtos);
-        pagedListHolder.setPageSize(5);
+        if (size.isEmpty())
+            pagedListHolder.setPageSize(5);
+        else
+            pagedListHolder.setPageSize(size.get());
         if (spec.isEmpty() || spec.get().equals(specializationName)) {
             pagedListHolder.setPage(page - 1);
         }
@@ -84,7 +87,7 @@ public class EmployeeService {
             List<WeekDayDto> oldDays =  receptionDateService.getDifferentDays(employee);
             List<WeekDayDto> addDays = checkDays(newDays,oldDays);
             List<WeekDayDto> deleteDays = checkDays(oldDays,newDays);
-            if (addDays.size() != 0 && deleteDays.size() != 0)
+            if (addDays.size() != 0 || deleteDays.size() != 0)
                 receptionDateService.updateReceptionAndDate(addDays,deleteDays,employee);
         }
     }
