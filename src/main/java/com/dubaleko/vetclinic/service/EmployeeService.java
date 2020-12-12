@@ -3,9 +3,12 @@ package com.dubaleko.vetclinic.service;
 import com.dubaleko.vetclinic.comparators.DayComparator;
 import com.dubaleko.vetclinic.comparators.EmployeeComparator;
 import com.dubaleko.vetclinic.dto.EmployeeDto;
+import com.dubaleko.vetclinic.dto.WeekDayDto;
 import com.dubaleko.vetclinic.entity.Employee;
+import com.dubaleko.vetclinic.entity.ReceptionDate;
 import com.dubaleko.vetclinic.entity.WeekDay;
 import com.dubaleko.vetclinic.repository.EmployeeRepository;
+import com.dubaleko.vetclinic.repository.ReceptionDateRepository;
 import com.dubaleko.vetclinic.repository.SpecializationRepository;
 import com.dubaleko.vetclinic.repository.WeekDayRepository;
 import org.modelmapper.ModelMapper;
@@ -20,13 +23,18 @@ public class EmployeeService {
     private final SpecializationRepository specializationRepository;
     private final EmployeeRepository employeeRepository;
     private final WeekDayRepository weekDayRepository;
+    private final ReceptionDateService receptionDateService;
+    private final ReceptionDateRepository receptionDateRepository;
     private String specializationName = "Empty";
 
     public EmployeeService(SpecializationRepository specializationRepository, EmployeeRepository employeeRepository,
-                           WeekDayRepository weekDayRepository) {
+                           WeekDayRepository weekDayRepository, ReceptionDateService receptionDateService,
+                           ReceptionDateRepository receptionDateRepository) {
         this.specializationRepository = specializationRepository;
         this.employeeRepository = employeeRepository;
         this.weekDayRepository = weekDayRepository;
+        this.receptionDateService = receptionDateService;
+        this.receptionDateRepository = receptionDateRepository;
     }
 
     public PagedListHolder<EmployeeDto> getEmployees(int page, Optional<String> spec){
@@ -61,15 +69,42 @@ public class EmployeeService {
             weekDays.add(weekDayRepository.getByDayName(weekDay.getDayName()));
         }
         employee.setDays(weekDays);
-        if (employee.getId() == null){
-
-        }
         employeeRepository.save(employee);
+
+        List<ReceptionDate> receptionDates = receptionDateRepository.findAllByEmployee(employee);
+        if (receptionDates.size() < 1){
+            ArrayList <Employee> employees = new ArrayList<Employee>();
+            employees.add(employee);
+            receptionDateService.saveNewReceptionDateAndTime(7,employees);
+        }
+        else {
+            List<WeekDayDto> newDays = weekDays.stream().map(user -> new ModelMapper().
+                    map(user, WeekDayDto.class)).collect(Collectors.toList());
+            Collections.sort(newDays,new DayComparator());
+            List<WeekDayDto> oldDays =  receptionDateService.getDifferentDays(employee);
+            List<WeekDayDto> addDays = checkDays(newDays,oldDays);
+            List<WeekDayDto> deleteDays = checkDays(oldDays,newDays);
+            if (addDays.size() != 0 && deleteDays.size() != 0)
+                receptionDateService.updateReceptionAndDate(addDays,deleteDays,employee);
+        }
     }
 
     public List<EmployeeDto> getPreview(){
         List<Employee> employees = employeeRepository.findTopByName();
         return employees.stream().map(user -> new ModelMapper().map(user, EmployeeDto.class)).
                 collect(Collectors.toList());
+    }
+
+    private List<WeekDayDto> checkDays(List<WeekDayDto> firstSet, List<WeekDayDto> secondSet){
+        List<WeekDayDto> days = new ArrayList<>();
+        for (WeekDayDto weekDayDto : firstSet){
+            if (secondSet.contains(weekDayDto)){
+                continue;
+            }
+            else {
+                days.add(weekDayDto);
+            }
+        }
+        return days;
     }
 }

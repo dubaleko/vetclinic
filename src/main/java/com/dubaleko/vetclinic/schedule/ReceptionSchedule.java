@@ -19,14 +19,14 @@ public class ReceptionSchedule {
         this.receptionDateRepository = receptionDateRepository;
     }
 
-    @Scheduled(cron = "00 9 04 * * ?")
+    @Scheduled(cron = "00 00 00 * * ?")
     public void updateReceptionSchedule(){
         if (receptionDateRepository.findAll().size() > 0){
             receptionDateService.deleteOldDateAndTime(Date.valueOf(LocalDate.now()));
-            receptionDateService.saveNewReceptionDateAndTime(1);
+            receptionDateService.saveNewReceptionDateAndTime(1,null);
         }
         else {
-            receptionDateService.saveNewReceptionDateAndTime(7);
+            receptionDateService.saveNewReceptionDateAndTime(7,null);
         }
     }
 }

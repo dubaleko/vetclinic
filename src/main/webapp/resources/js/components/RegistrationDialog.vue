@@ -8,6 +8,7 @@
                 Регистрация
             </v-card-title>
             <v-card-text>
+                <h4 class="validationError"  v-if="responseCode == 409" v-text="responseStatus"/>
                 <h6 class="validationError" v-if="!$v.userName.required && $v.userName.$dirty">Поле имя не может быть пустым</h6>
                 <h6 class="validationError" v-else-if="$v.userName.$dirty && !$v.userName.minLength">Минимальная длина имени 4 символа</h6>
                 <h6 class="validationError" v-else-if="$v.userName.$dirty && !userName.match('^[а-яА-ЯёЁa-zA-Z0-9]+$')">Им может состоять только из букв и цифр</h6>
@@ -29,7 +30,7 @@
     export default {
         name: "LoginDialog",
         data: () => ({
-            dialog: false,
+            dialog: false, responseCode : null, responseStatus: null,
             userName: '', password: '',
         }),
         validations:{
@@ -49,6 +50,10 @@
                     let user = {userName: this.userName, password: this.password}
                     this.$http.post('/api/users', user).then(function (response) {
                         window.location.href='/';
+                    }, (response) => {
+                        console.log(response)
+                        this.responseCode = response.status;
+                        this.responseStatus = 'User with this name already exist';
                     })
                 }
             }
