@@ -46,7 +46,7 @@ public class OrderService {
         }
         List<OrderDto> orderDtos = getDtosList(clinicOrders);
         PagedListHolder<OrderDto> pagedListHolder = new PagedListHolder<OrderDto>(orderDtos);
-        pagedListHolder.setPageSize(19);
+        pagedListHolder.setPageSize(15);
         pagedListHolder.setPage(page - 1);
         return pagedListHolder;
     }

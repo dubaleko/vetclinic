@@ -15,6 +15,8 @@
                 </td>
             </tr>
         </table>
+        <v-pagination v-if="totalPages > 1" @input="getOrderList" v-model="page" :length="totalPages" :total-visible="7"
+                      prev-icon="arrow_back" next-icon="arrow_forward"></v-pagination>
     </v-container>
 </template>
 
