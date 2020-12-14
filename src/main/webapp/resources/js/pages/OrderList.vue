@@ -15,6 +15,9 @@
                 </td>
             </tr>
         </table>
+        <v-row align="center" justify="center" v-if="orders.length < 1">
+            Извините но у вас нет активных талонов
+        </v-row>
         <v-pagination v-if="totalPages > 1" @input="getOrderList" v-model="page" :length="totalPages" :total-visible="7"
                       prev-icon="arrow_back" next-icon="arrow_forward"></v-pagination>
     </v-container>

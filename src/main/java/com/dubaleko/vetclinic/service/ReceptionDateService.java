@@ -1,5 +1,6 @@
 package com.dubaleko.vetclinic.service;
 
+import com.dubaleko.vetclinic.comparators.DateComparator;
 import com.dubaleko.vetclinic.comparators.TimeComparator;
 import com.dubaleko.vetclinic.dto.EmployeeDto;
 import com.dubaleko.vetclinic.dto.ReceptionDateDto;
@@ -19,6 +20,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -58,6 +60,7 @@ public class ReceptionDateService {
         for (ReceptionDateDto receptionDateDto : receptionDateDtos){
             receptionDateDto.setEmployeeDto(employeeDto);
         }
+        Collections.sort(receptionDateDtos, new DateComparator());
         return receptionDateDtos;
     }
 
@@ -123,8 +126,14 @@ public class ReceptionDateService {
         ReceptionDate receptionDate = new ReceptionDate(null, java.sql.Date.valueOf(date), employee);
         receptionDateRepository.save(receptionDate);
         for (int j = 0; j < 21; j++){
-            ReceptionTime receptionTime = new ReceptionTime(null,
-                    new Time(21600000 + 1800000 * j),false,receptionDate);
+            Time time = new Time(21600000 + 1800000 * j);
+            boolean flag = false;
+            if (LocalDate.now().equals(receptionDate.getDate().toLocalDate())){
+                if (LocalTime.now().plusMinutes(10).isAfter(time.toLocalTime())){
+                    flag = true;
+                }
+            }
+            ReceptionTime receptionTime = new ReceptionTime(null, time,flag,receptionDate);
             receptionTimeRepository.save(receptionTime);
         }
     }

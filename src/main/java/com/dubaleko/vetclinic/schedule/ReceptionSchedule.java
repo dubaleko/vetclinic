@@ -35,7 +35,7 @@ public class ReceptionSchedule {
             List<ReceptionTime> receptionTimes = receptionTimeRepository.findAllByDate(receptionDate);
             for (ReceptionTime receptionTime : receptionTimes){
                 LocalTime localTime = LocalTime.now();
-                localTime.plusMinutes(11);
+                localTime = localTime.plusMinutes(10);
                 if (localTime.isAfter(receptionTime.getTime().toLocalTime())
                         && !receptionTime.getOccupied()) {
                     receptionTime.setOccupied(true);
