@@ -4,6 +4,7 @@ import NotFound from "./pages/NotFound.vue";
 import Main from "./pages/Main.vue";
 import Service from "./pages/Service.vue";
 import Employee from "./pages/Employee.vue";
+import OrderList from "./pages/OrderList.vue";
 import Order from "./pages/Order.vue";
 
 Vue.use(VueRouter)
@@ -13,6 +14,7 @@ const routes = [
     { path: '/service',component: Service},
     { path: '/employee',component: Employee},
     {path: '/order',component:Order},
+    {path: '/order/list',component:OrderList},
     { path: '*', component:NotFound}
 ]
 

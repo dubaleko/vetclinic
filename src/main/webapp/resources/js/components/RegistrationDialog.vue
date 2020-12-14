@@ -53,7 +53,7 @@
                     }, (response) => {
                         console.log(response)
                         this.responseCode = response.status;
-                        this.responseStatus = 'User with this name already exist';
+                        this.responseStatus = 'Пользователь с таким именем уже существует';
                     })
                 }
             }

@@ -1,6 +1,5 @@
 package com.dubaleko.vetclinic.dto;
 
-import com.dubaleko.vetclinic.entity.WeekDay;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

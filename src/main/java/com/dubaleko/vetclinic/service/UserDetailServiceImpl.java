@@ -54,7 +54,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
             return true;
         }
         else {
-            response.sendError(HttpStatus.CONFLICT.value(),"User with this login already exists");
+            response.sendError(HttpStatus.CONFLICT.value(),"Пользователь с таким именем уже существует");
             return false;
         }
     }

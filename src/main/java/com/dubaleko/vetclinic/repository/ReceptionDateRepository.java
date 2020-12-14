@@ -13,4 +13,5 @@ public interface ReceptionDateRepository extends JpaRepository<ReceptionDate,Lon
     @Query(value = "select  * from reception_date order by date desc limit 1",nativeQuery = true)
     public ReceptionDate findBottomByDate (Date date);
     public List<ReceptionDate> findAllByEmployee(Employee employee);
+    public List<ReceptionDate> findAllByDate(Date receptionDate);
 }

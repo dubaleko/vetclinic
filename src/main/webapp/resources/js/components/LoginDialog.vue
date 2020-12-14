@@ -35,7 +35,7 @@
                 this.$http.post('/login?username='+this.userName+'&password='+this.password).then((response) => {
                     window.location.href='/';
                 }, (response)=>{
-                    this.errorMessage = "Wrong username or password"
+                    this.errorMessage = "Неправильные имя пользователя или пароль"
                 })
             }
         }

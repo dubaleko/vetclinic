@@ -20,7 +20,9 @@
             </v-card-text>
         </v-card><br>
         <v-btn class="mr-4" href="/order">Запись на прием</v-btn>
+        <v-btn class="mr-4" href="/order/list">Ваши талоны</v-btn>
         <v-btn color="blue" class="white--text" href="/employee">Просмотреть всех сотрудников</v-btn>
+        <notifications position="bottom right" group="success" />
     </v-container>
 </template>
 
@@ -41,6 +43,15 @@
             getEmployeePreview(){
                 this.$http.get('/api/employee/preview').then(function (response) {
                     this.employeePreview = response.body;
+                })
+            }
+        },
+        mounted() {
+            if (localStorage.getItem("SuccessNotification")) {
+                localStorage.clear();
+                this.$notify({
+                    group: 'success', title: 'Вы записаны',
+                    text: 'Вы записаны на прием к врачу. Постарайтесь не опаздывать.', type: 'success'
                 })
             }
         },

@@ -1,5 +1,9 @@
 package com.dubaleko.vetclinic.service;
 
+import com.dubaleko.vetclinic.comparators.TimeComparator;
+import com.dubaleko.vetclinic.dto.EmployeeDto;
+import com.dubaleko.vetclinic.dto.ReceptionDateDto;
+import com.dubaleko.vetclinic.dto.ReceptionTimeDto;
 import com.dubaleko.vetclinic.dto.WeekDayDto;
 import com.dubaleko.vetclinic.entity.Employee;
 import com.dubaleko.vetclinic.entity.ReceptionDate;
@@ -8,6 +12,7 @@ import com.dubaleko.vetclinic.entity.WeekDay;
 import com.dubaleko.vetclinic.repository.EmployeeRepository;
 import com.dubaleko.vetclinic.repository.ReceptionDateRepository;
 import com.dubaleko.vetclinic.repository.ReceptionTimeRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -16,6 +21,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ReceptionDateService {
@@ -41,6 +47,34 @@ public class ReceptionDateService {
                     dayName.substring(0,1).toUpperCase()+dayName.substring(1)));
         }
         return weekDayDtos;
+    }
+
+    public List<ReceptionDateDto> getAllDateByEmployeeId(Long id){
+        List<ReceptionDate> receptionDates = receptionDateRepository.findAllByEmployee(employeeRepository.getOne(id));
+        EmployeeDto employeeDto = new EmployeeDto();
+        new ModelMapper().map(receptionDates.get(0).getEmployee(),employeeDto);
+        List<ReceptionDateDto> receptionDateDtos = receptionDates.stream().map(user -> new ModelMapper().
+                map(user, ReceptionDateDto.class)).collect(Collectors.toList());
+        for (ReceptionDateDto receptionDateDto : receptionDateDtos){
+            receptionDateDto.setEmployeeDto(employeeDto);
+        }
+        return receptionDateDtos;
+    }
+
+    public List<ReceptionTimeDto> getAllTimeByDateId(Long id) {
+        List<ReceptionTime> receptionTimes = receptionTimeRepository.findAllByDate(receptionDateRepository.getOne(id));
+        EmployeeDto employeeDto = new EmployeeDto();
+        ReceptionDateDto receptionDateDto = new ReceptionDateDto();
+        new ModelMapper().map(receptionTimes.get(0).getDate(),receptionDateDto);
+        new ModelMapper().map(receptionTimes.get(0).getDate().getEmployee(),employeeDto);
+        receptionDateDto.setEmployeeDto(employeeDto);
+        List<ReceptionTimeDto> receptionTimeDtos = receptionTimes.stream().map(user -> new ModelMapper().
+                map(user, ReceptionTimeDto.class)).collect(Collectors.toList());
+        for (ReceptionTimeDto receptionTimeDto : receptionTimeDtos){
+            receptionTimeDto.setReceptionDateDto(receptionDateDto);
+        }
+        Collections.sort(receptionTimeDtos, new TimeComparator());
+        return  receptionTimeDtos;
     }
 
     public void updateReceptionAndDate(List<WeekDayDto> add,List<WeekDayDto> delete, Employee employee){
@@ -70,7 +104,7 @@ public class ReceptionDateService {
             for (int i = 0; i < count; i++) {
                 LocalDate date;
                 if (count == 1) {
-                    date = localDate.plusDays(7);
+                    date = localDate.plusDays(6);
                 }
                 else {
                     date = localDate.plusDays(i);
@@ -88,7 +122,7 @@ public class ReceptionDateService {
     private  void saveDateAndTime(LocalDate date, Employee employee){
         ReceptionDate receptionDate = new ReceptionDate(null, java.sql.Date.valueOf(date), employee);
         receptionDateRepository.save(receptionDate);
-        for (int j = 0; j < 23; j++){
+        for (int j = 0; j < 21; j++){
             ReceptionTime receptionTime = new ReceptionTime(null,
                     new Time(21600000 + 1800000 * j),false,receptionDate);
             receptionTimeRepository.save(receptionTime);

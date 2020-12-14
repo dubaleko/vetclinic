@@ -3,6 +3,8 @@ package com.dubaleko.vetclinic.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.websocket.OnMessage;
@@ -18,13 +20,16 @@ public class ClinicOrder {
     @ManyToOne(optional = false)
     @JoinColumn(name = "userId")
     User user;
-    @ManyToOne(optional = false)
+    @ManyToOne(cascade = CascadeType.REFRESH)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name= "employee")
     Employee employee;
-    @ManyToOne(optional = false)
+    @ManyToOne(cascade = CascadeType.REFRESH)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "date")
     ReceptionDate receptionDate;
-    @ManyToOne(optional = false)
+    @ManyToOne(cascade = CascadeType.REFRESH)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "time")
     ReceptionTime receptionTime;
 }
