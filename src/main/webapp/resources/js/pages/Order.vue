@@ -55,6 +55,9 @@
                     </v-card>
                 </v-col>
             </v-row>
+            <v-row  align="center" justify="center" v-if="receptionTime.length < 1">
+                Извините но мы не смогли найти запрашиваемые вами данные
+            </v-row>
         </div>
     </v-container>
 </template>

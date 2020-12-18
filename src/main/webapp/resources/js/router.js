@@ -14,7 +14,7 @@ const routes = [
     { path: '/service',component: Service},
     { path: '/employee',component: Employee},
     {path: '/order',component:Order},
-    {path: '/order/list',component:OrderList},
+    {path: '/talons',component:OrderList},
     { path: '*', component:NotFound}
 ]
 

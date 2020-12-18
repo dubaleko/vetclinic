@@ -19,7 +19,7 @@
                 <h5 class="validationError" v-if="!$v.serviceCost.required && $v.serviceCost.$dirty">
                     Цена услуги не может быть пустой</h5>
                 <h5 class="validationError" v-else-if="$v.serviceCost.$dirty && !serviceCost.match('^[0-9]*[.]?[0-9]+$')">
-                    Цена услуги может быть только числом</h5>
+                    Цена услуги может быть только одним числом</h5>
                 <v-text-field v-model="serviceCost" placeholder="Введите цену услуги" label="Цена услуги"/>
             </v-card-text>
             <v-card-actions>

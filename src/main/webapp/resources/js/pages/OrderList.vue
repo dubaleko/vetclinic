@@ -53,7 +53,7 @@
             },
             refuseOrder(id){
                 this.$http.delete('/api/order?id='+id).then(function (response) {
-                    window.location.href = '/order/list';
+                    window.location.href = '/talons';
                 })
             }
         },

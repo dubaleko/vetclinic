@@ -20,7 +20,7 @@
             </v-card-text>
         </v-card><br>
         <v-btn class="mr-4" href="/order">Запись на прием</v-btn>
-        <v-btn class="mr-4" href="/order/list">Ваши талоны</v-btn>
+        <v-btn class="mr-4" href="/talons">Ваши талоны</v-btn>
         <v-btn color="blue" class="white--text" href="/employee">Просмотреть всех сотрудников</v-btn>
         <notifications position="bottom right" group="success" />
     </v-container>
