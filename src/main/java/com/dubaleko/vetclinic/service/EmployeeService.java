@@ -25,7 +25,6 @@ public class EmployeeService {
     private final WeekDayRepository weekDayRepository;
     private final ReceptionDateService receptionDateService;
     private final ReceptionDateRepository receptionDateRepository;
-    private String specializationName = "Empty";
 
     public EmployeeService(SpecializationRepository specializationRepository, EmployeeRepository employeeRepository,
                            WeekDayRepository weekDayRepository, ReceptionDateService receptionDateService,
@@ -37,13 +36,13 @@ public class EmployeeService {
         this.receptionDateRepository = receptionDateRepository;
     }
 
-    public PagedListHolder<EmployeeDto> getEmployees(int page, Optional<String> spec,Optional<Integer> size){
+    public PagedListHolder<EmployeeDto> getEmployees(int page, String spec,Optional<Integer> size){
         List<Employee> employees;
-        if (spec.isEmpty() || spec.get().equals("Любая специализация")) {
+        if (spec.equals("") || spec.equals("Любая специализация")) {
             employees = employeeRepository.findAll();
         }
         else  {
-            employees = specializationRepository.getBySpecialization(spec.get()).getEmpls();
+            employees = specializationRepository.getBySpecialization(spec).getEmpls();
         }
         List<EmployeeDto> employeeDtos = employees.stream().map(user -> new ModelMapper().map(user, EmployeeDto.class)).
                 collect(Collectors.toList());
@@ -56,13 +55,7 @@ public class EmployeeService {
             pagedListHolder.setPageSize(5);
         else
             pagedListHolder.setPageSize(size.get());
-        if (spec.isEmpty() || spec.get().equals(specializationName)) {
-            pagedListHolder.setPage(page - 1);
-        }
-        else {
-            pagedListHolder.setPage(0);
-            specializationName = spec.get();
-        }
+        pagedListHolder.setPage(page - 1);
         return pagedListHolder;
     }
 
@@ -90,12 +83,6 @@ public class EmployeeService {
             if (addDays.size() != 0 || deleteDays.size() != 0)
                 receptionDateService.updateReceptionAndDate(addDays,deleteDays,employee);
         }
-    }
-
-    public List<EmployeeDto> getPreview(){
-        List<Employee> employees = employeeRepository.findTopByName();
-        return employees.stream().map(user -> new ModelMapper().map(user, EmployeeDto.class)).
-                collect(Collectors.toList());
     }
 
     private List<WeekDayDto> checkDays(List<WeekDayDto> firstSet, List<WeekDayDto> secondSet){

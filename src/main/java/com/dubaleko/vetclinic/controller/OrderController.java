@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("api/order")
@@ -29,7 +28,7 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public  boolean  addNewEmployee(@RequestBody ClinicOrder clinicOrder,final HttpServletResponse response) throws IOException {
+    public  boolean  addNewEmployee(@RequestBody ClinicOrder clinicOrder, final HttpServletResponse response) throws IOException {
         return  orderService.saveOrder(clinicOrder, response);
     }
 

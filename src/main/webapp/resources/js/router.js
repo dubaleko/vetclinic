@@ -5,16 +5,20 @@ import Main from "./pages/Main.vue";
 import Service from "./pages/Service.vue";
 import Employee from "./pages/Employee.vue";
 import OrderList from "./pages/OrderList.vue";
+import Users from "./pages/Users.vue";
 import Order from "./pages/Order.vue";
+import Clinic from "./pages/Clinic.vue";
 
 Vue.use(VueRouter)
 
 const routes = [
     { path: '/', component: Main },
+    {path: '/clinic', component: Clinic},
     { path: '/service',component: Service},
     { path: '/employee',component: Employee},
     {path: '/order',component:Order},
     {path: '/talons',component:OrderList},
+    {path: '/users', component: Users},
     { path: '*', component:NotFound}
 ]
 

@@ -8,20 +8,15 @@
             </tr>
         </table><br>
         <v-btn color="blue" class="white--text" href="/service">Просмотреть все услуги</v-btn>
-        <h1>Сотрудники клиники</h1>
-        <v-card class="my-2" width="100%" v-for="employee in employeePreview" :key="employee.name">
-            <v-card-title>{{employee.name}}</v-card-title>
+        <h1>Клиники</h1>
+        <v-card class="my-2" width="100%" v-for="clinic in clinicPreview" :key="clinic.name">
+            <v-card-title>{{clinic.name}}</v-card-title>
             <v-card-text>
-                <h3>Должность: {{employee.position}}</h3>
-                <h3>Образование: {{employee.education}}</h3>
-                <h3>Специализация: <span v-for="object in employee.specs">
-                       {{object.specialization}}
-                   </span></h3>
+                <h3>Адрес: {{clinic.city}}  {{clinic.address}}</h3>
+                <h3>Описание: {{clinic.description}}</h3>
             </v-card-text>
         </v-card><br>
-        <v-btn class="mr-4" href="/order">Запись на прием</v-btn>
-        <v-btn class="mr-4" href="/talons">Ваши талоны</v-btn>
-        <v-btn color="blue" class="white--text" href="/employee">Просмотреть всех сотрудников</v-btn>
+        <v-btn color="blue" class="white--text" href="/clinic">Просмотреть всех клиники</v-btn>
         <notifications position="bottom right" group="success" />
     </v-container>
 </template>
@@ -31,18 +26,18 @@
         name: "Main",
         data(){
             return{
-                servicePreview:[],employeePreview:[]
+                servicePreview:[],clinicPreview:[]
             }
         },
         methods : {
             getServicePreview(){
                 this.$http.get('/api/service/preview').then(function (response) {
-                    this.servicePreview = response.data.content;
+                    this.servicePreview = response.body;
                 })
             },
             getEmployeePreview(){
-                this.$http.get('/api/employee/preview').then(function (response) {
-                    this.employeePreview = response.body;
+                this.$http.get('/api/clinic/preview').then(function (response) {
+                    this.clinicPreview = response.body;
                 })
             }
         },

@@ -24,15 +24,9 @@ public class EmployeeController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public PagedListHolder<EmployeeDto> list(@RequestParam int page, @RequestParam Optional<String> spec,
+    public PagedListHolder<EmployeeDto> list(@RequestParam int page, @RequestParam String spec,
                                              @RequestParam Optional<Integer> size){
         return employeeService.getEmployees(page,spec,size);
-    }
-
-    @GetMapping("preview")
-    @ResponseStatus(HttpStatus.OK)
-    public List<EmployeeDto> getFive(){
-        return employeeService.getPreview();
     }
 
     @PostMapping

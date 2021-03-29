@@ -5,12 +5,14 @@ import com.dubaleko.vetclinic.entity.enums.Role;
 import com.dubaleko.vetclinic.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import static org.springframework.security.core.userdetails.User.withUsername;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -38,8 +40,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
     }
 
     private UserDetails buildUserDetailsForAuthentication(User user) {
-        org.springframework.security.core.userdetails.User.UserBuilder builder =
-                org.springframework.security.core.userdetails.User.withUsername(user.getUserName());
+        UserBuilder builder = withUsername(user.getUserName());
         builder.password(user.getPassword());
         builder.roles(user.getRole().name());
         return builder.build();

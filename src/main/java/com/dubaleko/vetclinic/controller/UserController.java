@@ -1,8 +1,11 @@
 package com.dubaleko.vetclinic.controller;
 
 import com.dubaleko.vetclinic.entity.User;
+import com.dubaleko.vetclinic.repository.UserRepository;
 import com.dubaleko.vetclinic.service.UserDetailServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,13 +15,24 @@ import java.io.IOException;
 @RestController
 @RequestMapping("api/users")
 public class UserController {
-    @Autowired
     private  UserDetailServiceImpl userDetailService;
+    private UserRepository userRepository;
 
-    @GetMapping
+    public UserController(UserDetailServiceImpl userDetailService, UserRepository userRepository) {
+        this.userDetailService = userDetailService;
+        this.userRepository = userRepository;
+    }
+
+    @GetMapping("current")
     @ResponseStatus(HttpStatus.OK)
     public User getUser(){
         return userDetailService.getCurrentUser();
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public Page<User> getUsers(@RequestParam int page){
+       return userRepository.findUsersByPage(PageRequest.of(page - 1, 19, Sort.Direction.ASC, "userName"));
     }
 
     @PostMapping

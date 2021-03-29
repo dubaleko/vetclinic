@@ -1,9 +1,9 @@
 <template>
     <v-container>
-        <h1>Наши Сотрудники</h1>
-        <v-row v-if="user">
-            <employee-dialog  v-if="user.role == 'ADMIN'" action="Добавить нового сотрудника"
-                              :specName="specialization" :spec="employeeSpec" :employee="emptyEmployee" />
+        <h1>Сотрудники</h1>
+        <v-row v-if="user && user.role == 'ADMIN'">
+            <employee-dialog action="Добавить нового сотрудника" :specName="specialization"
+                             :spec="employeeSpec" :employee="emptyEmployee" />
         </v-row>
         <v-select v-model="searchSpec" :items="myEmployeeSpec" label="Специализация"/>
         <v-row>
@@ -18,10 +18,10 @@
                </v-card-text>
                <v-card-actions>
                    <v-btn color="blue" class="white--text"  :href="employee.url">Запись на прием</v-btn>
-                   <div v-if="user">
-                       <employee-dialog v-if="user.role == 'ADMIN'" action="Обновить" :spec="employeeSpec"
-                       :spec-name="specialization" :employee="employee"/>
-                       <v-btn v-if="user.role == 'ADMIN'" text @click="deleteEmployee(employee.id)">Удалить</v-btn>
+                   <div v-if="user && user.role == 'ADMIN'">
+                       <employee-dialog action="Обновить" :spec="employeeSpec"
+                                        :spec-name="specialization" :employee="employee"/>
+                       <v-btn text @click="deleteEmployee(employee.id)">Удалить</v-btn>
                    </div>
                </v-card-actions>
            </v-card>
@@ -49,6 +49,7 @@
         watch: {
             searchSpec: function (newTemplate, oldTemplate) {
                 if (newTemplate != oldTemplate){
+                    this.page = 1;
                     this.getAllEmployees(this.page);
                 }
             }
@@ -67,15 +68,13 @@
             getAllEmployees(page){
                 if(!page)
                     page = 1;
-                let url = '/api/employee?page='+page;
-                if (this.searchSpec)
-                    url += '&spec='+this.searchSpec;
+                let url = '/api/employee?page='+page + '&spec='+this.searchSpec;
                 this.$http.get(url).then(function (response) {
                     this.employees = response.body.pageList;
                     this.totalPages = response.body.pageCount;
                     this.page = response.body.page+1;
                     this.employees.forEach(element=>{
-                        element.url="/order?employee_id="+element.id;
+                        element.url="/clinicOrder?employee_id="+element.id;
                     })
                 })
             },

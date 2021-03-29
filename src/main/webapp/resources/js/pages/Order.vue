@@ -23,7 +23,7 @@
                 </v-col>
             </v-row>
             <v-row align="center" justify="center" v-if="employees.length < 1">
-                Извините но по вашему запросу не найдено сотрудников нашей клиники
+                Извините но по вашему запросу не найдено сотрудников клиник партнеров
             </v-row>
             <v-pagination v-if="totalPages > 1" @input="getAllEmployees" v-model="page" :length="totalPages" :total-visible="7"
                           prev-icon="arrow_back" next-icon="arrow_forward"></v-pagination>
@@ -79,6 +79,7 @@
         watch: {
             searchSpec: function (newTemplate, oldTemplate) {
                 if (newTemplate != oldTemplate){
+                    this.page = 1;
                     this.getAllEmployees(this.page);
                 }
             }
@@ -96,9 +97,7 @@
             getAllEmployees(page){
                 if(!page)
                     page = 1;
-                let url = '/api/employee?page='+page+'&size='+18;
-                if (this.searchSpec)
-                    url += '&spec='+this.searchSpec;
+                let url = '/api/employee?page='+page+'&size='+18+'&spec='+this.searchSpec;
                 this.$http.get(url).then(function (response) {
                     this.employees = response.body.pageList;
                     this.totalPages = response.body.pageCount;

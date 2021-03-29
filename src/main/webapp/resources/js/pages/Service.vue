@@ -1,8 +1,8 @@
 <template>
     <v-container>
         <h1>Услуги</h1>
-        <v-row v-if="user">
-            <service-dialog v-if="user.role == 'ADMIN'" :service="emptyService" :types="serviceType"
+        <v-row v-if="user && user.role == 'ADMIN'">
+            <service-dialog :service="emptyService" :types="serviceType"
                             :typeNames="serviceTypeNames" action="Добавить новую услугу">
             </service-dialog>
         </v-row>
@@ -11,11 +11,11 @@
             <tr class="bottom-border" v-for="service in services" :key="service.Name">
                 <td align="left">{{service.serviceName}}</td>
                 <td align="right">{{service.serviceCost.toFixed(2)}} р.</td>
-                <td align="right" v-if="user">
-                    <service-dialog v-if="user.role == 'ADMIN'" :service="service" :types="serviceType"
+                <td align="right" v-if="user && user.role == 'ADMIN'">
+                    <service-dialog :service="service" :types="serviceType"
                                     :typeNames="serviceTypeNames" action="Обновить">
                     </service-dialog>
-                    <v-btn v-if="user.role == 'ADMIN'" text @click="deleteService(service.id)">Удалить</v-btn>
+                    <v-btn text @click="deleteService(service.id)">Удалить</v-btn>
                 </td>
             </tr>
         </table>
@@ -34,13 +34,14 @@
         props:['user'],
         data(){
             return{
-                type : null, page : null, totalPages: null,emptyService : {},
+                type : '', page : null, totalPages: null,emptyService : {},
                 myServices:[], services:[], serviceType:[], serviceTypeNames:[]
             }
         },
         watch: {
             type: function (newTemplate, oldTemplate) {
                 if (newTemplate != oldTemplate){
+                    this.page = 1;
                     this.getAllService(this.page);
                 }
             }
@@ -59,9 +60,7 @@
             getAllService(page){
                 if(!page)
                     page = 1;
-                let url = '/api/service?page='+page;
-                if (this.type)
-                    url += '&type='+this.type;
+                let url = '/api/service?page='+page +'&type='+this.type;
                 this.$http.get(url).then(function (response) {
                     this.services = response.data.content;
                     this.totalPages = response.data.totalPages;
