@@ -1,22 +1,27 @@
 package com.dubaleko.vetclinic.controller;
 
+import com.dubaleko.vetclinic.comparators.ClinicComparator;
 import com.dubaleko.vetclinic.entity.Clinic;
 import com.dubaleko.vetclinic.repository.ClinicRepository;
+import com.dubaleko.vetclinic.service.ClinicService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
 @RequestMapping("api/clinic")
 public class ClinicController {
     private final ClinicRepository clinicRepository;
+    private final ClinicService clinicService;
 
-    public ClinicController(ClinicRepository clinicRepository) {
+    public ClinicController(ClinicRepository clinicRepository, ClinicService clinicService) {
         this.clinicRepository = clinicRepository;
+        this.clinicService = clinicService;
     }
 
     @GetMapping
@@ -41,6 +46,14 @@ public class ClinicController {
         return clinicRepository.findTwoClinic();
     }
 
+    @GetMapping("all")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Clinic> getAllClinics(){
+        List<Clinic> clinics = clinicRepository.findAll();
+        Collections.sort(clinics, new ClinicComparator());
+        return clinics;
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public  void  addNewClinic(@RequestBody Clinic clinic){
@@ -56,6 +69,6 @@ public class ClinicController {
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     public void delete(@RequestParam long id){
-        clinicRepository.deleteById(id);
+        clinicService.deleteClinicById(id);
     }
 }

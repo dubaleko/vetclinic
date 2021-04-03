@@ -7,9 +7,9 @@
             <v-btn text color="white" class="ml-12" href="/clinic">Клиники</v-btn>
             <v-btn text color="white" class="ml-2" href="/service">Услуги</v-btn>
             <v-btn text color="white" class="ml-2" href="/employee">Сотрудники</v-btn>
-            <v-btn text color="white" class="ml-2" href="/reviews">Отзывы</v-btn>
             <v-btn text color="white" class="ml-2" href="/order">Запись на прием</v-btn>
             <v-btn text color="white" class="ml-2" href="/talons">Талоны</v-btn>
+            <v-btn text color="white" class="ml-2" href="/pets">Питомцы</v-btn>
             <v-spacer></v-spacer>
             <div v-if="user">
                 <span class="white--text">{{user.userName}}</span>

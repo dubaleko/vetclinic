@@ -1,5 +1,6 @@
 package com.dubaleko.vetclinic.dto;
 
+import com.dubaleko.vetclinic.entity.Clinic;
 import com.dubaleko.vetclinic.entity.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,4 +18,6 @@ public class UserDto {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
+    private Clinic clinic;
+    private EmployeeDto doctor;
 }

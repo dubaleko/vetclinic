@@ -14,11 +14,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping("api/employee")
 public class EmployeeController {
-    private final EmployeeRepository employeeRepository;
     private final EmployeeService employeeService;
 
-    public EmployeeController(EmployeeRepository employeeRepository, EmployeeService employeeService) {
-        this.employeeRepository = employeeRepository;
+    public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
 
@@ -27,6 +25,12 @@ public class EmployeeController {
     public PagedListHolder<EmployeeDto> list(@RequestParam int page, @RequestParam String spec,
                                              @RequestParam Optional<Integer> size){
         return employeeService.getEmployees(page,spec,size);
+    }
+
+    @GetMapping("all")
+    @ResponseStatus(HttpStatus.OK)
+    public List<EmployeeDto> allEmployees(){
+        return  employeeService.getAllEmployees();
     }
 
     @PostMapping
@@ -44,6 +48,6 @@ public class EmployeeController {
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     public void delete(@RequestParam long id){
-        employeeRepository.deleteById(id);
+        employeeService.deleteEmployeeById(id);
     }
 }

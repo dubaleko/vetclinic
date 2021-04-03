@@ -1,23 +1,27 @@
-<template>
+<template xmlns="http://www.w3.org/1999/html">
     <v-container>
         <h1>Услуги</h1>
-        <v-row v-if="user && user.role == 'ADMIN'">
-            <service-dialog :service="emptyService" :types="serviceType"
-                            :typeNames="serviceTypeNames" action="Добавить новую услугу">
+        <v-row v-if="user">
+            <service-dialog v-if="user.role == 'MODERATOR' || user.role == 'ADMIN'" :service="emptyService" :user="user"
+                            :types="serviceType"  :typeNames="serviceTypeNames" action="Добавить новую услугу">
             </service-dialog>
         </v-row>
         <v-select v-model="type" :items="myServices" label="Типы услуг"/>
-        <table width="100%">
-            <tr class="bottom-border" v-for="service in services" :key="service.Name">
+        <table v-for="service in services" :key="service.Name">
+            <tr class="bottom-border">
                 <td align="left">{{service.serviceName}}</td>
+                <td align="left">{{service.clinic.name}}</td>
                 <td align="right">{{service.serviceCost.toFixed(2)}} р.</td>
-                <td align="right" v-if="user && user.role == 'ADMIN'">
-                    <service-dialog :service="service" :types="serviceType"
-                                    :typeNames="serviceTypeNames" action="Обновить">
-                    </service-dialog>
-                    <v-btn text @click="deleteService(service.id)">Удалить</v-btn>
-                </td>
             </tr>
+            <div v-if="user">
+                    <div v-if="user.role == 'ADMIN' ||
+                               user.role == 'MODERATOR' && user.clinic.name == service.clinic.name">
+                        <service-dialog :service="service" :types="serviceType" :user="user"
+                                        :typeNames="serviceTypeNames" action="Обновить">
+                        </service-dialog>
+                        <v-btn text @click="deleteService(service.id)">Удалить</v-btn>
+                    </div>
+            </div>
         </table>
         <v-row align="center" justify="center" v-if="services.length < 1">
             Извините но по вашему запросу не найдено никаких услуг
@@ -81,5 +85,10 @@
 </script>
 
 <style scoped>
-        TD { border-bottom: 1px black dashed;}
+    table {
+        width: 100%; /* Ширина таблицы */
+    }
+    TD { border-bottom: 1px black dashed;}
+    TD:first-child{width: 70%}
+    TD:nth-child{width: 15%}
 </style>

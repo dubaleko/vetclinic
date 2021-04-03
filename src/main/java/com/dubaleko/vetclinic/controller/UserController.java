@@ -1,8 +1,10 @@
 package com.dubaleko.vetclinic.controller;
 
+import com.dubaleko.vetclinic.dto.UserDto;
 import com.dubaleko.vetclinic.entity.User;
 import com.dubaleko.vetclinic.repository.UserRepository;
 import com.dubaleko.vetclinic.service.UserDetailServiceImpl;
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -25,19 +27,31 @@ public class UserController {
 
     @GetMapping("current")
     @ResponseStatus(HttpStatus.OK)
-    public User getUser(){
+    public UserDto getUser(){
         return userDetailService.getCurrentUser();
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page<User> getUsers(@RequestParam int page){
-       return userRepository.findUsersByPage(PageRequest.of(page - 1, 19, Sort.Direction.ASC, "userName"));
+    public PagedListHolder<UserDto> getUsers(@RequestParam int page){
+        return  userDetailService.getAllUsers(page);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public boolean create(@RequestBody User user, final HttpServletResponse response) throws IOException {
         return  userDetailService.saveUser(user, response);
+    }
+
+    @PutMapping
+    @ResponseStatus(HttpStatus.OK)
+    public void update(@RequestBody User user){
+        userRepository.save(user);
+    }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteUserById(@RequestParam Long id){
+        userDetailService.deleteUserById(id);
     }
 }

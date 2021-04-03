@@ -1,12 +1,13 @@
 <template>
     <v-container>
         <h1>Услуги</h1>
-        <table width="100%">
-            <tr class="bottom-border" v-for="service in servicePreview" :key="service.Name">
+        <table v-for="service in servicePreview" :key="service.Name">
+            <tr class="bottom-border">
                 <td align="left">{{service.serviceName}}</td>
+                <td align="left">{{service.clinic.name}}</td>
                 <td align="right">{{service.serviceCost.toFixed(2)}} р.</td>
             </tr>
-        </table><br>
+        </table>
         <v-btn color="blue" class="white--text" href="/service">Просмотреть все услуги</v-btn>
         <h1>Клиники</h1>
         <v-card class="my-2" width="100%" v-for="clinic in clinicPreview" :key="clinic.name">
@@ -58,6 +59,10 @@
 </script>
 
 <style scoped>
-    TABLE{size: 15px;}
+    table {
+        width: 100%; /* Ширина таблицы */
+    }
     TD { border-bottom: 1px black dashed;}
+    TD:first-child{width: 70%}
+    TD:nth-child{width: 15%}
 </style>

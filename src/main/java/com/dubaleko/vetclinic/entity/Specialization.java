@@ -16,7 +16,6 @@ public class Specialization {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private  String specialization;
-
     @ManyToMany(mappedBy = "specs")
     private List<Employee> empls;
 }

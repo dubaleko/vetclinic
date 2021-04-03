@@ -6,11 +6,10 @@ import com.dubaleko.vetclinic.dto.EmployeeDto;
 import com.dubaleko.vetclinic.dto.WeekDayDto;
 import com.dubaleko.vetclinic.entity.Employee;
 import com.dubaleko.vetclinic.entity.ReceptionDate;
+import com.dubaleko.vetclinic.entity.User;
 import com.dubaleko.vetclinic.entity.WeekDay;
-import com.dubaleko.vetclinic.repository.EmployeeRepository;
-import com.dubaleko.vetclinic.repository.ReceptionDateRepository;
-import com.dubaleko.vetclinic.repository.SpecializationRepository;
-import com.dubaleko.vetclinic.repository.WeekDayRepository;
+import com.dubaleko.vetclinic.entity.enums.Role;
+import com.dubaleko.vetclinic.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Service;
@@ -25,15 +24,17 @@ public class EmployeeService {
     private final WeekDayRepository weekDayRepository;
     private final ReceptionDateService receptionDateService;
     private final ReceptionDateRepository receptionDateRepository;
+    private final UserRepository userRepository;
 
     public EmployeeService(SpecializationRepository specializationRepository, EmployeeRepository employeeRepository,
                            WeekDayRepository weekDayRepository, ReceptionDateService receptionDateService,
-                           ReceptionDateRepository receptionDateRepository) {
+                           ReceptionDateRepository receptionDateRepository, UserRepository userRepository) {
         this.specializationRepository = specializationRepository;
         this.employeeRepository = employeeRepository;
         this.weekDayRepository = weekDayRepository;
         this.receptionDateService = receptionDateService;
         this.receptionDateRepository = receptionDateRepository;
+        this.userRepository = userRepository;
     }
 
     public PagedListHolder<EmployeeDto> getEmployees(int page, String spec,Optional<Integer> size){
@@ -57,6 +58,14 @@ public class EmployeeService {
             pagedListHolder.setPageSize(size.get());
         pagedListHolder.setPage(page - 1);
         return pagedListHolder;
+    }
+
+    public List<EmployeeDto> getAllEmployees(){
+        List<Employee> employees = employeeRepository.findAll();
+        List<EmployeeDto> employeeDtos = employees.stream().map(user -> new ModelMapper().map(user, EmployeeDto.class)).
+                collect(Collectors.toList());
+        Collections.sort(employeeDtos, new EmployeeComparator());
+        return employeeDtos;
     }
 
     public void save(Employee employee){
@@ -83,6 +92,16 @@ public class EmployeeService {
             if (addDays.size() != 0 || deleteDays.size() != 0)
                 receptionDateService.updateReceptionAndDate(addDays,deleteDays,employee);
         }
+    }
+
+    public void  deleteEmployeeById(Long id){
+        List<User> users = userRepository.findAllByEmployee(employeeRepository.getOne(id));
+        for (User user : users){
+            user.setRole(Role.USER);
+            user.setDoctor(null);
+            userRepository.save(user);
+        }
+        employeeRepository.deleteById(id);
     }
 
     private List<WeekDayDto> checkDays(List<WeekDayDto> firstSet, List<WeekDayDto> secondSet){

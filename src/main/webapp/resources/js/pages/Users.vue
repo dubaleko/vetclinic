@@ -9,7 +9,11 @@
         <table width="100%">
             <tr class="bottom-border" v-for="user in users" :key="user.Name">
                 <td align="left">{{user.userName}}</td>
-                <td align="right">{{user.role}}</td>
+                <td align="left">{{user.role}}</td>
+                <td align="right">
+                    <user-dialog :user="user"/>
+                    <v-btn text @click="deleteUser(user.id)">Удалить</v-btn>
+                </td>
             </tr>
         </table>
         <v-pagination v-if="totalPages > 1" @input="getAllUsers" v-model="page" :length="totalPages" :total-visible="7"
@@ -18,8 +22,10 @@
 </template>
 
 <script>
+    import UserDialog from "../components/UserDialog.vue";
     export default {
         name: "Users",
+        components: {UserDialog},
         props:['user'],
         data(){
             return {
@@ -32,9 +38,14 @@
                     page = 1;
                 let url = '/api/users?page='+page;
                 this.$http.get(url).then(function (response) {
-                    this.users = response.data.content;
-                    this.totalPages = response.data.totalPages;
-                    this.page = response.data.pageable.pageNumber+1;
+                    this.users = response.body.pageList;
+                    this.totalPages = response.body.pageCount;
+                    this.page = response.body.page+1;
+                })
+            },
+            deleteUser(id){
+                this.$http.delete('/api/users?id='+id).then(function (response) {
+                    window.location.href = '/users';
                 })
             }
         },

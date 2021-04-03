@@ -2,8 +2,7 @@
     <v-container>
         <h1>Клиники</h1>
         <v-row v-if="user && user.role == 'ADMIN'">
-            <clinic-dialog :clinic="emptyClinic" action="Добавить новую клинику">
-            </clinic-dialog>
+            <clinic-dialog :clinic="emptyClinic" action="Добавить новую клинику"/>
         </v-row>
         <v-select v-model="searchCity" :items="cities" label="Город в котором расположена клиника"/>
         <v-row>
@@ -16,10 +15,12 @@
                 <v-card-actions>
                     <v-btn color="blue" class="white--text">Услуги</v-btn>
                     <v-btn color="blue" class="white--text" >Сотрудники</v-btn>
-                    <v-btn color="blue" class="white--text">Отзывы</v-btn>
                     <div v-if="user">
-                        <clinic-dialog v-if="user.role == 'ADMIN'" :clinic="clinic" action="Обновить"/>
-                        <v-btn v-if="user.role == 'ADMIN'" text @click="deleteClinic(clinic.id)">Удалить</v-btn>
+                        <div v-if="user.role == 'ADMIN' ||
+                                        user.role == 'MODERATOR' && user.clinic.name == clinic.name">
+                            <clinic-dialog :clinic="clinic" action="Обновить"/>
+                            <v-btn text @click="deleteClinic(clinic.id)">Удалить</v-btn>
+                        </div>
                     </div>
                 </v-card-actions>
             </v-card>

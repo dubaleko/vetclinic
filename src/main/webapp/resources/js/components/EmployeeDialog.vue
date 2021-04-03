@@ -29,7 +29,7 @@
                 <v-select multiple chips v-model="employeeWorkDay" :items="daysName" label="Рабочие дни"/>
             </v-card-text>
             <v-card-actions>
-                <v-btn color="blue darken-1" text @click="temporarySave">Сохранить</v-btn>
+                <v-btn color="blue darken-1" text @click="save">Сохранить</v-btn>
                 <v-btn color="blue darken-1" text @click="close">Закрыть</v-btn>
             </v-card-actions>
         </v-card>
@@ -74,7 +74,7 @@
             close(){
                 this.dialog = false;
             },
-            temporarySave(){
+            save(){
                 this.$v.$touch()
                 if (this.$v.$invalid || !this.name.match(this.onlyChar) || !this.position.match(this.onlyChar)){
                     return

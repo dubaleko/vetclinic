@@ -16,11 +16,14 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String userName;
-
     private String password;
-
     @Enumerated(EnumType.STRING)
     private Role role;
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "clinic")
+    Clinic clinic;
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "doctor")
+    Employee doctor;
 }
