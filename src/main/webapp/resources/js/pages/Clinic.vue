@@ -13,7 +13,7 @@
                     <h3>Описание: {{clinic.description}}</h3>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn color="blue" class="white--text">Услуги</v-btn>
+                    <v-btn :href="clinic.serviceUrl" color="blue" class="white--text">Услуги</v-btn>
                     <v-btn color="blue" class="white--text" >Сотрудники</v-btn>
                     <div v-if="user">
                         <div v-if="user.role == 'ADMIN' ||
@@ -62,12 +62,9 @@
                     this.clinics = response.data.content;
                     this.totalPages = response.data.totalPages;
                     this.page = response.data.pageable.pageNumber+1;
-                })
-            },
-            getAllCities(){
-                this.$http.get('/api/clinic/cities').then(function (response) {
-                    this.cities = response.body;
-                    this.cities.unshift("Все города");
+                    this.clinics.forEach(clinic=>{
+                        clinic.serviceUrl = '/service?clinic='+clinic.id;
+                    })
                 })
             },
             deleteClinic(id){
@@ -77,8 +74,11 @@
             }
         },
         created() {
-            this.getAllClinics(this.page);
-            this.getAllCities();
+            this.$http.get('/api/clinic/cities').then(function (response) {
+                this.cities = response.body;
+                this.cities.unshift("Все города");
+                this.getAllClinics(this.page);
+            })
         }
     }
 </script>

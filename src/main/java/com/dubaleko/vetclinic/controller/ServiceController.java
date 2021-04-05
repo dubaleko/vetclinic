@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/service")
@@ -22,8 +23,9 @@ public class ServiceController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page list(@RequestParam int page, @RequestParam String type){
-        return  service.getServices(page,type);
+    public Page list(@RequestParam int page, @RequestParam Optional<Long> serviceType,
+                     @RequestParam Optional<Long> clinic){
+        return  service.getServices(page, serviceType, clinic);
     }
 
     @GetMapping("preview")

@@ -38,17 +38,12 @@
                 user:null
             }
         },
-        methods:{
-            getUser(){
-                this.$http.get('/api/users/current').then(function (response) {
-                    if (response.data.userName != null){
-                        this.user = response.data;
-                    }
-                })
-            },
-        },
         created() {
-            this.getUser();
+            this.$http.get('/api/users/current').then(function (response) {
+                if (response.data.userName != null){
+                    this.user = response.data;
+                }
+            })
         }
     }
 </script>

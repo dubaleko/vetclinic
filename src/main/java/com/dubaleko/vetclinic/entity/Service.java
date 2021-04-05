@@ -19,7 +19,7 @@ public class Service {
     private String serviceName;
     private double serviceCost;
     @ManyToOne(optional = false)
-    @JoinColumn(name = "typeId")
+    @JoinColumn(name = "serviceType")
     ServiceType serviceType;
     @ManyToOne(optional = false, cascade = CascadeType.REFRESH)
     @OnDelete(action = OnDeleteAction.CASCADE)

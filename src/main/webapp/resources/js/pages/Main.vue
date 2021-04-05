@@ -30,18 +30,6 @@
                 servicePreview:[],clinicPreview:[]
             }
         },
-        methods : {
-            getServicePreview(){
-                this.$http.get('/api/service/preview').then(function (response) {
-                    this.servicePreview = response.body;
-                })
-            },
-            getEmployeePreview(){
-                this.$http.get('/api/clinic/preview').then(function (response) {
-                    this.clinicPreview = response.body;
-                })
-            }
-        },
         mounted() {
             if (localStorage.getItem("SuccessNotification")) {
                 localStorage.clear();
@@ -52,16 +40,18 @@
             }
         },
         created() {
-            this.getServicePreview();
-            this.getEmployeePreview();
+            this.$http.get('/api/service/preview').then(function (response) {
+                this.servicePreview = response.body;
+            });
+            this.$http.get('/api/clinic/preview').then(function (response) {
+                this.clinicPreview = response.body;
+            });
         }
     }
 </script>
 
 <style scoped>
-    table {
-        width: 100%; /* Ширина таблицы */
-    }
+    table {width: 100%;}
     TD { border-bottom: 1px black dashed;}
     TD:first-child{width: 70%}
     TD:nth-child{width: 15%}

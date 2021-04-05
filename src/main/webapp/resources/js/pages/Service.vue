@@ -3,10 +3,18 @@
         <h1>Услуги</h1>
         <v-row v-if="user">
             <service-dialog v-if="user.role == 'MODERATOR' || user.role == 'ADMIN'" :service="emptyService" :user="user"
-                            :types="serviceType"  :typeNames="serviceTypeNames" action="Добавить новую услугу">
+                            :types="serviceType" :clinics="clinics" :clinics-name="clinicsName"
+                            :typeNames="serviceTypeNames" action="Добавить новую услугу">
             </service-dialog>
         </v-row>
-        <v-select v-model="type" :items="myServices" label="Типы услуг"/>
+        <v-row align="center">
+        <v-col >
+            <v-combobox clearable v-model="clinic" :items="clinicsName" label="Клиника"/>
+        </v-col>
+        <v-col>
+            <v-combobox  v-model="type" :items="serviceTypeNames" label="Тип услуги"/>
+        </v-col>
+        </v-row>
         <table v-for="service in services" :key="service.Name">
             <tr class="bottom-border">
                 <td align="left">{{service.serviceName}}</td>
@@ -16,8 +24,8 @@
             <div v-if="user">
                     <div v-if="user.role == 'ADMIN' ||
                                user.role == 'MODERATOR' && user.clinic.name == service.clinic.name">
-                        <service-dialog :service="service" :types="serviceType" :user="user"
-                                        :typeNames="serviceTypeNames" action="Обновить">
+                        <service-dialog :service="service" :types="serviceType" :user="user" :clinics="clinics"
+                                        :clinics-name="clinicsName" :typeNames="serviceTypeNames" action="Обновить">
                         </service-dialog>
                         <v-btn text @click="deleteService(service.id)">Удалить</v-btn>
                     </div>
@@ -33,38 +41,100 @@
 
 <script>
     import ServiceDialog from "../components/ServiceDialog.vue";
+    window.addEventListener('popstate', e=>{
+        window.location.reload();
+    });
     export default {
         components: {ServiceDialog},
         props:['user'],
         data(){
             return{
-                type : '', page : null, totalPages: null,emptyService : {},
-                myServices:[], services:[], serviceType:[], serviceTypeNames:[]
+                type : null, page : null, totalPages: null, emptyService : {},
+                services:[], serviceType:[], serviceTypeNames:[],
+                clinicsName:[], clinics:[], clinic:null
             }
         },
         watch: {
             type: function (newTemplate, oldTemplate) {
                 if (newTemplate != oldTemplate){
-                    this.page = 1;
-                    this.getAllService(this.page);
+                    let id = this.getIdByName(this.serviceType, this.type);
+                    if (!id && id != 0){
+                        if (this.$route.query.clinic){
+                            window.history.pushState("", "Title", '/service?clinic='+this.$route.query.clinic);
+                            this.getAllService();
+                        }
+                        else{
+                            window.history.pushState("", "Title", '/service');
+                            this.getAllService();
+                        }
+                    }
+                    else  if (id != this.$route.query.serviceType){
+                        if (this.$route.query.clinic){
+                            window.history.pushState("", "Title", '/service?serviceType='+id+'&clinic='+this.$route.query.clinic);
+                            this.getAllService();
+                        }
+                        else {
+                            window.history.pushState("", "Title", '/service?serviceType=' + id);
+                            this.getAllService();
+                        }
+                    }
                 }
+            },
+            clinic: function (newTemplate, oldTemplate) {
+              if (newTemplate != oldTemplate){
+                  let id = this.getIdByName(this.clinics,this.clinic);
+                  if (!id && id != 0){
+                      if (this.$route.query.serviceType){
+                          window.history.pushState("", "Title", '/service?serviceType='+this.$route.query.serviceType);
+                          this.getAllService();
+                      }
+                      else{
+                          window.history.pushState("", "Title", '/service');
+                          this.getAllService();
+                      }
+                  }
+                  else if (id != this.$route.query.clinic){
+                      if (this.$route.query.serviceType){
+                          window.history.pushState("", "Title", '/service?serviceType='+this.$route.query.serviceType+'&clinic='+id);
+                          this.getAllService();
+                      }
+                      else {
+                          window.history.pushState("", "Title",  '/service?clinic='+id);
+                          this.getAllService();
+                      }
+                  }
+              }
             }
         },
         methods :{
-            getServiceType(){
-                this.$http.get('/api/servicetype').then(function (response) {
-                    this.serviceType = response.data;
-                    this.serviceType.forEach(element=>{
-                        this.serviceTypeNames.push(element.serviceTypeName);
-                        this.myServices.push(element.serviceTypeName);
-                    })
-                    this.myServices.unshift("Все услуги");
-                })
-            },
             getAllService(page){
                 if(!page)
                     page = 1;
-                let url = '/api/service?page='+page +'&type='+this.type;
+                let url = '/api/service?page='+page
+                if (this.type){
+                    let id = this.getIdByName(this.serviceType, this.type);
+                    url += '&serviceType='+id;
+                }
+                else if(this.$route.query.serviceType){
+                    url += '&serviceType='+this.$route.query.serviceType;
+                    this.serviceType.forEach(serviceType=>{
+                        if (serviceType.id == this.$route.query.serviceType){
+                            this.type = serviceType.name;
+                        }
+                    })
+                }
+                if (this.clinic){
+                    let id = this.getIdByName(this.clinics,this.clinic);
+                    url+='&clinic='+id;
+                }
+                else if (this.$route.query.clinic){
+                    url+='&clinic='+this.$route.query.clinic;
+                    this.clinics.forEach(clinic=>{
+                        if (clinic.id == this.$route.query.clinic){
+                            this.clinic = clinic.name;
+                        }
+                    })
+                }
                 this.$http.get(url).then(function (response) {
                     this.services = response.data.content;
                     this.totalPages = response.data.totalPages;
@@ -75,19 +145,37 @@
                 this.$http.delete('/api/service?id='+id).then(function (response) {
                     window.location.href = '/service';
                 })
+            },
+            getIdByName(elements,name){
+                let id = 0;
+                elements.forEach(element=>{
+                    if (name == element.name){
+                        id = element.id;
+                    }
+                });
+                return id;
             }
         },
         created() {
-            this.getServiceType();
-            this.getAllService();
+            this.$http.get('/api/clinic/all').then(function (response) {
+                this.clinics = response.body;
+                this.clinics.forEach(clinic=>{
+                    this.clinicsName.push(clinic.name);
+                })
+                this.$http.get('/api/servicetype').then(function (response) {
+                    this.serviceType = response.data;
+                    this.serviceType.forEach(element=>{
+                        this.serviceTypeNames.push(element.name);;
+                    })
+                    this.getAllService();
+                });
+            });
         }
     }
 </script>
 
 <style scoped>
-    table {
-        width: 100%; /* Ширина таблицы */
-    }
+    table {width: 100%;}
     TD { border-bottom: 1px black dashed;}
     TD:first-child{width: 70%}
     TD:nth-child{width: 15%}

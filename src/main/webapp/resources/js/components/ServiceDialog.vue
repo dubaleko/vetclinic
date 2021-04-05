@@ -36,10 +36,10 @@
 <script>
     import {required} from 'vuelidate/lib/validators'
     export default {
-        props:['action','types','typeNames','service','user'],
+        props:['action','types','typeNames','service','user','clinics','clinicsName'],
         name: "ServiceDialog",
         data: () => ({
-            dialog: false, id : '', myService: null, clinics:[], clinicsName: [],
+            dialog: false, id : '', myService: null,
             serviceType : '', serviceName: '', serviceCost: '', clinic: ''
         }),
         validations:{
@@ -51,7 +51,7 @@
         updated(){
             if (this.myService != this.service) {
                 if (this.service.serviceType) {
-                    this.serviceType = this.service.serviceType.serviceTypeName;
+                    this.serviceType = this.service.serviceType.name;
                     this.id = this.service.id;
                     if (this.user.role == 'ADMIN'){
                         this.clinic = this.service.clinic.name;
@@ -80,7 +80,7 @@
                 }else {
                     let serviceType = null;
                     this.types.forEach(element=>{
-                        if (element.serviceTypeName == this.serviceType){
+                        if (element.name == this.serviceType){
                             serviceType = element;
                         }
                     })
@@ -106,14 +106,6 @@
                     }
                 }
             }
-        },
-        created() {
-            this.$http.get('/api/clinic/all').then(function (response) {
-                this.clinics = response.body;
-                this.clinics.forEach(clinic=>{
-                    this.clinicsName.push(clinic.name);
-                })
-            })
         }
     }
 </script>
