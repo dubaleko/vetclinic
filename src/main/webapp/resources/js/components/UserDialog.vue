@@ -8,9 +8,15 @@
                 <span class="headline">Обновить</span>
             </v-card-title>
             <v-card-text>
+                <h5 class="validationError" v-if="!$v.name.required && $v.name.$dirty">
+                    Имя пользователя не может быть пустыым</h5>
                 <v-text-field v-model="name" placeholder="Введите имя пользователя" label="Имя пользователя"/>
                 <v-select v-model="role" :items="roles" label="Роль"/>
+                <h5 class="validationError" v-if="$v.clinic.$dirty && role == 'MODERATOR' && !clinic">
+                    Выберите клинику</h5>
                 <v-select v-if="role == 'MODERATOR'" v-model="clinic" :items="clinicsName" label="Ответсвенный за клинику"/>
+                <h5 class="validationError" v-if="$v.doctor.$dirty && role == 'DOCTOR' && !doctor">
+                    Выберите врача</h5>
                 <v-select v-if="role == 'DOCTOR'" v-model="doctor" :items="doctorsName" label="Врач"/>
             </v-card-text>
             <v-card-actions>
@@ -34,7 +40,7 @@
             }
         },
         validations:{
-            name : {required}
+            name : {required}, clinic: {}, doctor: {},
         },
         updated(){
             if (this.myUser != this.user) {
@@ -57,32 +63,36 @@
                 this.dialog = false;
             },
             save(){
-                if (this.role =='MODERATOR'){
-                    this.clinics.forEach(clinic=>{
-                        if (clinic.name == this.clinic){
-                            this.clinic = clinic;
-                        }
+                this.$v.$touch();
+                if (this.$v.$invalid || this.role == 'MODERATOR' && !this.clinic || this.role == 'DOCTOR' && !this.doctor ){
+                    return
+                }else {
+                    if (this.role =='MODERATOR'){
+                        this.clinics.forEach(clinic=>{
+                            if (clinic.name == this.clinic){
+                                this.clinic = clinic;
+                            }
+                        })
+                        this.doctor = null;
+                    }
+                    else if (this.role == 'DOCTOR'){
+                        this.doctors.forEach(doctor=>{
+                            if (doctor.name == this.doctor){
+                                this.doctor = doctor;
+                            }
+                        })
+                        this.clinic = null;
+                    }
+                    else {
+                        this.clinic = this.doctor = null;
+                    }
+                    let user = {id: this.id, userName: this.name, password: this.myUser.password,
+                        role: this.role, clinic: this.clinic, doctor: this.doctor};
+                    this.dialog = false;
+                    this.$http.put('/api/users',user).then(function (response) {
+                        window.location.href = '/users';
                     })
-                    this.doctor = null;
                 }
-                else if (this.role == 'DOCTOR'){
-                    this.doctors.forEach(doctor=>{
-                        if (doctor.name == this.doctor){
-                            this.doctor = doctor;
-                        }
-                    })
-                    console.log(this.doctor);
-                    this.clinic = null;
-                }
-                else {
-                    this.clinic = this.doctor = null;
-                }
-                let user = {id: this.id, userName: this.name, password: this.myUser.password,
-                    role: this.role, clinic: this.clinic, doctor: this.doctor};
-                this.dialog = false;
-                this.$http.put('/api/users',user).then(function (response) {
-                    window.location.href = '/users';
-                })
             }
         },
         created() {
@@ -103,5 +113,7 @@
 </script>
 
 <style scoped>
-
+    .validationError{
+        color: red;
+    }
 </style>

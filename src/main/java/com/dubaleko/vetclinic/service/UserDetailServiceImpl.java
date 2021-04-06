@@ -94,8 +94,14 @@ public class UserDetailServiceImpl implements UserDetailsService {
         }
     }
 
-    public PagedListHolder<UserDto> getAllUsers(int page){
-        List<User> users = repository.findAll();
+    public PagedListHolder<UserDto> getAllUsers(int page,Optional<String> name){
+        List<User> users;
+        if (name.isPresent()){
+            users = repository.findAllByUserName(name.get());
+        }
+        else {
+            users = repository.findAll();
+        }
         List<UserDto> userDto = users.stream().map(user -> new ModelMapper().map(user, UserDto.class)).
                 collect(Collectors.toList());
         Collections.sort(userDto, new UserComparator());

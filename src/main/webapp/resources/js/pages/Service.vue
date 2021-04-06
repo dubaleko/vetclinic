@@ -8,12 +8,12 @@
             </service-dialog>
         </v-row>
         <v-row align="center">
-        <v-col >
-            <v-combobox clearable v-model="clinic" :items="clinicsName" label="Клиника"/>
-        </v-col>
-        <v-col>
-            <v-combobox  v-model="type" :items="serviceTypeNames" label="Тип услуги"/>
-        </v-col>
+            <v-col >
+                <v-select v-model="clinic" :items="myClinics" label="Клиника"/>
+            </v-col>
+            <v-col>
+            <v-select  v-model="type" :items="myServices" label="Тип услуги"/>
+            </v-col>
         </v-row>
         <table v-for="service in services" :key="service.Name">
             <tr class="bottom-border">
@@ -49,18 +49,25 @@
         props:['user'],
         data(){
             return{
-                type : null, page : null, totalPages: null, emptyService : {},
-                services:[], serviceType:[], serviceTypeNames:[],
-                clinicsName:[], clinics:[], clinic:null
+                type : null, page : null, totalPages: null, emptyService : null,
+                services:[], serviceType:[], serviceTypeNames:[], myServices:[],
+                clinicsName:[], clinics:[], clinic:null, myClinics:[]
             }
         },
         watch: {
             type: function (newTemplate, oldTemplate) {
                 if (newTemplate != oldTemplate){
                     let id = this.getIdByName(this.serviceType, this.type);
-                    if (!id && id != 0){
-                        if (this.$route.query.clinic){
-                            window.history.pushState("", "Title", '/service?clinic='+this.$route.query.clinic);
+                    if (!id){
+                        this.type = "Все услуги";
+                        if (this.$route.query.clinic || this.clinic && this.clinic != 'Все клиники'){
+                            if (this.$route.query.clinic){
+                                window.history.pushState("", "Title", '/service?clinic='+this.$route.query.clinic);
+                            }
+                            else {
+                                let clinicId = this.getIdByName(this.clinics,this.clinic);
+                                window.history.pushState("", "Title", '/service?clinic='+clinicId);
+                            }
                             this.getAllService();
                         }
                         else{
@@ -69,8 +76,14 @@
                         }
                     }
                     else  if (id != this.$route.query.serviceType){
-                        if (this.$route.query.clinic){
-                            window.history.pushState("", "Title", '/service?serviceType='+id+'&clinic='+this.$route.query.clinic);
+                        if (this.$route.query.clinic || this.clinic && this.clinic != 'Все клиники'){
+                            if (this.$route.query.clinic) {
+                                window.history.pushState("", "Title", '/service?serviceType=' + id + '&clinic=' + this.$route.query.clinic);
+                            }
+                            else {
+                                let clinicId = this.getIdByName(this.clinics,this.clinic);
+                                window.history.pushState("", "Title", '/service?serviceType=' + id + '&clinic=' + clinicId);
+                            }
                             this.getAllService();
                         }
                         else {
@@ -83,9 +96,16 @@
             clinic: function (newTemplate, oldTemplate) {
               if (newTemplate != oldTemplate){
                   let id = this.getIdByName(this.clinics,this.clinic);
-                  if (!id && id != 0){
-                      if (this.$route.query.serviceType){
-                          window.history.pushState("", "Title", '/service?serviceType='+this.$route.query.serviceType);
+                  if (!id){
+                      this.clinic = "Все клиники";
+                      if (this.$route.query.serviceType || this.type && this.type != 'Все услуги' ){
+                          if (this.$route.query.serviceType ) {
+                              window.history.pushState("", "Title", '/service?serviceType=' + this.$route.query.serviceType);
+                          }
+                          else {
+                              let serviceId = this.getIdByName(this.serviceType, this.type);;
+                              window.history.pushState("", "Title", '/service?serviceType='+serviceId);
+                          }
                           this.getAllService();
                       }
                       else{
@@ -94,8 +114,14 @@
                       }
                   }
                   else if (id != this.$route.query.clinic){
-                      if (this.$route.query.serviceType){
-                          window.history.pushState("", "Title", '/service?serviceType='+this.$route.query.serviceType+'&clinic='+id);
+                      if (this.$route.query.serviceType || this.type && this.type != 'Все услуги'){
+                          if (this.$route.query.serviceType) {
+                              window.history.pushState("", "Title", '/service?serviceType=' + this.$route.query.serviceType + '&clinic=' + id);
+                          }
+                          else if (this.type){
+                              let serviceId = this.getIdByName(this.serviceType, this.type);;
+                              window.history.pushState("", "Title", '/service?serviceType=' + serviceId + '&clinic=' + id);
+                          }
                           this.getAllService();
                       }
                       else {
@@ -111,7 +137,7 @@
                 if(!page)
                     page = 1;
                 let url = '/api/service?page='+page
-                if (this.type){
+                if (this.type && this.type != 'Все услуги'){
                     let id = this.getIdByName(this.serviceType, this.type);
                     url += '&serviceType='+id;
                 }
@@ -123,7 +149,7 @@
                         }
                     })
                 }
-                if (this.clinic){
+                if (this.clinic && this.clinic != 'Все клиники'){
                     let id = this.getIdByName(this.clinics,this.clinic);
                     url+='&clinic='+id;
                 }
@@ -147,7 +173,7 @@
                 })
             },
             getIdByName(elements,name){
-                let id = 0;
+                let id;
                 elements.forEach(element=>{
                     if (name == element.name){
                         id = element.id;
@@ -161,12 +187,16 @@
                 this.clinics = response.body;
                 this.clinics.forEach(clinic=>{
                     this.clinicsName.push(clinic.name);
+                    this.myClinics.push(clinic.name);
                 })
+                this.myClinics.unshift("Все клиники");
                 this.$http.get('/api/servicetype').then(function (response) {
                     this.serviceType = response.data;
                     this.serviceType.forEach(element=>{
-                        this.serviceTypeNames.push(element.name);;
+                        this.serviceTypeNames.push(element.name);
+                        this.myServices.push(element.name);
                     })
+                    this.myServices.unshift("Все услуги");
                     this.getAllService();
                 });
             });

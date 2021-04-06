@@ -70,9 +70,6 @@
                 this.dialog = false;
             },
             save(){
-                if (this.user.role != 'ADMIN'){
-                    this.clinic = this.user.clinic;
-                }
                 this.$v.$touch()
                 if (this.$v.$invalid || !this.serviceName.match('^[а-яА-ЯёЁ0-9()-/ ]+$')
                     || !this.serviceCost.toString().match('^[0-9]*[.]?[0-9]+$')){
@@ -90,6 +87,9 @@
                                 this.clinic = clinic;
                             }
                         })
+                    }
+                    else {
+                        this.clinic = this.user.clinic;
                     }
                     let service = {id : this.id ,serviceName: this.serviceName, serviceCost: this.serviceCost,
                         serviceType:serviceType, clinic: this.clinic}

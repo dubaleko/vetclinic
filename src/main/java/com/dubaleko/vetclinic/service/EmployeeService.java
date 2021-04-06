@@ -2,6 +2,7 @@ package com.dubaleko.vetclinic.service;
 
 import com.dubaleko.vetclinic.comparators.DayComparator;
 import com.dubaleko.vetclinic.comparators.EmployeeComparator;
+import com.dubaleko.vetclinic.comparators.SpecsComparator;
 import com.dubaleko.vetclinic.dto.EmployeeDto;
 import com.dubaleko.vetclinic.dto.WeekDayDto;
 import com.dubaleko.vetclinic.entity.Employee;
@@ -25,31 +26,47 @@ public class EmployeeService {
     private final ReceptionDateService receptionDateService;
     private final ReceptionDateRepository receptionDateRepository;
     private final UserRepository userRepository;
+    private final ClinicRepository clinicRepository;
 
     public EmployeeService(SpecializationRepository specializationRepository, EmployeeRepository employeeRepository,
                            WeekDayRepository weekDayRepository, ReceptionDateService receptionDateService,
-                           ReceptionDateRepository receptionDateRepository, UserRepository userRepository) {
+                           ReceptionDateRepository receptionDateRepository, UserRepository userRepository,
+                           ClinicRepository clinicRepository) {
         this.specializationRepository = specializationRepository;
         this.employeeRepository = employeeRepository;
         this.weekDayRepository = weekDayRepository;
         this.receptionDateService = receptionDateService;
         this.receptionDateRepository = receptionDateRepository;
         this.userRepository = userRepository;
+        this.clinicRepository = clinicRepository;
     }
 
-    public PagedListHolder<EmployeeDto> getEmployees(int page, String spec,Optional<Integer> size){
-        List<Employee> employees;
-        if (spec.equals("") || spec.equals("Любая специализация")) {
-            employees = employeeRepository.findAll();
+    public PagedListHolder<EmployeeDto> getEmployees(int page,Optional<Integer> size, Optional<Long> spec,
+                                                     Optional<Long> clinic){
+        List<Employee> employees = new ArrayList<>();
+        if (spec.isPresent() && clinic.isPresent()){
+            List<Employee> employeeList = specializationRepository.getById(spec.get()).getEmpls();
+            for (Employee employee : employeeList){
+                if (employee.getClinic().getId() == clinic.get()){
+                    employees.add(employee);
+                }
+            }
         }
-        else  {
-            employees = specializationRepository.getBySpecialization(spec).getEmpls();
+        else if (clinic.isPresent()){
+            employees = employeeRepository.getByClinic(clinicRepository.getClinicById(clinic.get()));
+        }
+        else if (spec.isPresent()){
+            employees = specializationRepository.getById(spec.get()).getEmpls();
+        }
+        else {
+            employees = employeeRepository.findAll();
         }
         List<EmployeeDto> employeeDtos = employees.stream().map(user -> new ModelMapper().map(user, EmployeeDto.class)).
                 collect(Collectors.toList());
         Collections.sort(employeeDtos, new EmployeeComparator());
         for (EmployeeDto employeeDto : employeeDtos){
             Collections.sort(employeeDto.getDays(),new DayComparator());
+            Collections.sort(employeeDto.getSpecs(),new SpecsComparator());
         }
         PagedListHolder<EmployeeDto> pagedListHolder = new PagedListHolder<EmployeeDto>(employeeDtos);
         if (size.isEmpty())

@@ -13,9 +13,10 @@
                             <v-btn text :href="employee.url">{{employee.name}}</v-btn>
                         </v-card-title>
                         <v-card-text>
+                            <h4>Клиника {{employee.clinic.name}}</h4>
                             <h4>
                                 <span v-for="object in employee.specs">
-                                    {{object.specialization}}
+                                    {{object.name}}
                                 </span>
                             </h4>
                         </v-card-text>
@@ -89,7 +90,7 @@
                 this.$http.get('/api/specialization').then(function (response) {
                     this.employeeSpec = response.data;
                     this.employeeSpec.forEach(element=>{
-                        this.specialization.push(element.specialization);
+                        this.specialization.push(element.name);
                     })
                     this.specialization.unshift("Любая специализация");
                 })
@@ -97,7 +98,7 @@
             getAllEmployees(page){
                 if(!page)
                     page = 1;
-                let url = '/api/employee?page='+page+'&size='+18+'&spec='+this.searchSpec;
+                let url = '/api/employee?page='+page+'&size='+9+'&spec='+this.searchSpec;
                 this.$http.get(url).then(function (response) {
                     this.employees = response.body.pageList;
                     this.totalPages = response.body.pageCount;

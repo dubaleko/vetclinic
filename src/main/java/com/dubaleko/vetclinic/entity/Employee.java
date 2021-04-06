@@ -3,6 +3,8 @@ package com.dubaleko.vetclinic.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -18,6 +20,10 @@ public class Employee {
     private String name;
     private String position;
     private String education;
+    @ManyToOne(optional = false, cascade = CascadeType.REFRESH)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "clinic")
+    Clinic clinic;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "employee_spec",
             joinColumns = @JoinColumn(name = "employee_id"),

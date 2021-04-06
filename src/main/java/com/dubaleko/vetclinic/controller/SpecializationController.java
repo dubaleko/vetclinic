@@ -1,5 +1,6 @@
 package com.dubaleko.vetclinic.controller;
 
+import com.dubaleko.vetclinic.comparators.SpecsComparator;
 import com.dubaleko.vetclinic.dto.SpecializationDto;
 import com.dubaleko.vetclinic.entity.Specialization;
 import com.dubaleko.vetclinic.repository.SpecializationRepository;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +26,9 @@ public class SpecializationController {
     @ResponseStatus(HttpStatus.OK)
     public List<SpecializationDto> list(){
         List<Specialization> specializations= specializationRepository.findAll();
-        return specializations.stream().map(user -> new ModelMapper().map(user, SpecializationDto.class)).
-                collect(Collectors.toList());
+        List<SpecializationDto> dtos =specializations.stream().map(user ->
+                new ModelMapper().map(user, SpecializationDto.class)).collect(Collectors.toList());
+        Collections.sort(dtos,new SpecsComparator());
+        return dtos;
     }
 }

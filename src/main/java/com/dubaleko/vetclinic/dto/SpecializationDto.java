@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SpecializationDto {
     private Long id;
-    private String specialization;
+    private String name;
 }

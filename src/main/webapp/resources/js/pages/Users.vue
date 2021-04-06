@@ -6,6 +6,7 @@
     </v-container>
     <v-container v-else>
         <h1>Пользователи</h1>
+        <v-text-field v-model="name"  label="Имя пользователя"/>
         <table width="100%">
             <tr class="bottom-border" v-for="user in users" :key="user.Name">
                 <td align="left">{{user.userName}}</td>
@@ -29,14 +30,22 @@
         props:['user'],
         data(){
             return {
-                page : null, totalPages: null, users: []
+                page : null, totalPages: null, users: [], name: ''
             }
+        },
+        watch: {
+          name : function (newTemplate, oldTemplate) {
+              if (newTemplate != oldTemplate){
+                  this.page = 1;
+                  this.getAllUsers();
+              }
+          }
         },
         methods:{
             getAllUsers(page){
                 if(!page)
                     page = 1;
-                let url = '/api/users?page='+page;
+                let url = '/api/users?page='+page+'&name='+this.name;
                 this.$http.get(url).then(function (response) {
                     this.users = response.body.pageList;
                     this.totalPages = response.body.pageCount;

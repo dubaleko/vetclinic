@@ -22,9 +22,10 @@ public class EmployeeController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public PagedListHolder<EmployeeDto> list(@RequestParam int page, @RequestParam String spec,
-                                             @RequestParam Optional<Integer> size){
-        return employeeService.getEmployees(page,spec,size);
+    public PagedListHolder<EmployeeDto> list(@RequestParam int page, @RequestParam Optional<Integer> size,
+                                             @RequestParam Optional<Long> spec,
+                                             @RequestParam Optional<Long> clinic ){
+        return employeeService.getEmployees(page,size,spec,clinic);
     }
 
     @GetMapping("all")

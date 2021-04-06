@@ -21,6 +21,9 @@
                 <h5 class="validationError" v-if="!$v.education.required && $v.education.$dirty">
                     Данные об образовании не могут быть пустыми</h5>
                 <v-text-field v-model="education" placeholder="Введите данные об образовании" label="Образование"/>
+                <h5 class="validationError" v-if="!$v.clinic.required && $v.clinic.$dirty">
+                    Название клиники не может быть пустым</h5>
+                <v-select v-if="user.role == 'ADMIN'" v-model="clinic" :items="clinicsName" label="Название клиники"/>
                 <h5 class="validationError" v-if="!$v.employeeSpecName.required && $v.employeeSpecName.$dirty">
                     Специализация не может быть пустой</h5>
                 <v-select multiple chips v-model="employeeSpecName" :items="specName" label="Специализация"/>
@@ -40,16 +43,16 @@
     import {required} from 'vuelidate/lib/validators'
     export default {
         name: "EmployeeDialog",
-        props:['action','specName','spec','employee'],
+        props:['action','specName','spec','employee', 'user','clinics','clinicsName'],
         data: () => ({
             dialog: false,  position : '', education: '', employeeWorkDay : [],
-            id: '', name: '',  onlyChar: '^[а-яА-ЯёЁ ]+$', myEmployee: null,
+            id: '', name: '', clinic: '',  onlyChar: '^[а-яА-ЯёЁ ]+$', myEmployee: null,
             employeeSpecName : [], daysName :['Понедельник','Вторник','Среда','Четверг',
             'Пятница','Суббота','Воскресенье']
         }),
         validations:{
             name: {required}, education: {required}, employeeWorkDay: {required},
-            position: {required}, employeeSpecName: {required}
+            position: {required}, employeeSpecName: {required}, clinic: {required}
         },
         updated(){
             if (this.myEmployee != this.employee) {
@@ -57,9 +60,15 @@
                 this.name = this.employee.name;
                 this.position = this.employee.position;
                 this.education = this.employee.education;
+                if (this.user.role == 'ADMIN'){
+                    this.clinic = this.employee.clinic.name;
+                }
+                else {
+                    this.clinic = this.employee.clinic;
+                }
                 if (this.employee.specs) {
                     this.employee.specs.forEach(element => {
-                        this.employeeSpecName.push(element.specialization);
+                        this.employeeSpecName.push(element.name);
                     })
                 }
                 if (this.employee.days){
@@ -83,7 +92,7 @@
                     let employeeDays = [];
                     this.spec.forEach(element=>{
                         this.employeeSpecName.forEach(specName=>{
-                            if (element.specialization == specName){
+                            if (element.name == specName){
                                 employeeSpecs.push(element);
                             }
                         })
@@ -92,7 +101,17 @@
                         let object = {id:null,dayName:dayName,employees:null}
                         employeeDays.push(object);
                     })
-                    let employee = {id : this.id ,name: this.name, position:this.position,
+                    if (this.user.role == 'ADMIN'){
+                        this.clinics.forEach(clinic=>{
+                            if (clinic.name == this.clinic){
+                                this.clinic = clinic;
+                            }
+                        })
+                    }
+                    else {
+                        this.clinic = this.user.clinic;
+                    }
+                    let employee = {id : this.id ,name: this.name, position:this.position,clinic: this.clinic,
                         education: this.education, specs: employeeSpecs,days:employeeDays};
                     if (this.action == "Добавить нового сотрудника"){
                         this.$http.post('/api/employee',employee).then(function (response) {

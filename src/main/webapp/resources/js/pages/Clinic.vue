@@ -14,7 +14,7 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-btn :href="clinic.serviceUrl" color="blue" class="white--text">Услуги</v-btn>
-                    <v-btn color="blue" class="white--text" >Сотрудники</v-btn>
+                    <v-btn :href="clinic.employeeUrl" color="blue" class="white--text" >Сотрудники</v-btn>
                     <div v-if="user">
                         <div v-if="user.role == 'ADMIN' ||
                                         user.role == 'MODERATOR' && user.clinic.name == clinic.name">
@@ -64,6 +64,7 @@
                     this.page = response.data.pageable.pageNumber+1;
                     this.clinics.forEach(clinic=>{
                         clinic.serviceUrl = '/service?clinic='+clinic.id;
+                        clinic.employeeUrl = '/employee?clinic='+clinic.id;
                     })
                 })
             },

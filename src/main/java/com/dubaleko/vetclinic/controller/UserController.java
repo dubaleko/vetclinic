@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/users")
@@ -33,8 +34,8 @@ public class UserController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public PagedListHolder<UserDto> getUsers(@RequestParam int page){
-        return  userDetailService.getAllUsers(page);
+    public PagedListHolder<UserDto> getUsers(@RequestParam int page, @RequestParam Optional<String> name){
+        return  userDetailService.getAllUsers(page,name);
     }
 
     @PostMapping

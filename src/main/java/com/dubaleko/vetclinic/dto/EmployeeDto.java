@@ -1,5 +1,6 @@
 package com.dubaleko.vetclinic.dto;
 
+import com.dubaleko.vetclinic.entity.Clinic;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ public class EmployeeDto {
     private String name;
     private String education;
     private String position;
+    private Clinic clinic;
     private List<SpecializationDto> specs;
     private List<WeekDayDto> days;
 }
