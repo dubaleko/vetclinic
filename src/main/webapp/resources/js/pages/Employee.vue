@@ -41,13 +41,14 @@
                           prev-icon="arrow_back" next-icon="arrow_forward"></v-pagination>
         </v-row>
         <v-row align="center" justify="center" v-if="employees.length < 1">
-            Извините но по вашему запросу не найдено сотрудников нашей клиники
+            Извините но по вашему запросу не найдено сотрудников клиник партнеров
         </v-row>
     </v-container>
 </template>
 
 <script>
     import EmployeeDialog from "../components/EmployeeDialog.vue";
+    import {getIdByName,getVariableFromQuery,pushNewState} from "../methods.js";
     window.addEventListener('popstate', e=>{
         window.location.reload();
     });
@@ -65,79 +66,16 @@
         watch: {
             spec: function (newTemplate, oldTemplate) {
                 if (newTemplate != oldTemplate){
-                    let id = this.getIdByName(this.employeeSpec, this.spec);
-                    console.log(this.spec);
-                    console.log(id);
-                    if (!id){
-                        this.spec = "Все специальности";
-                        if (this.$route.query.clinic || this.clinic && this.clinic != 'Все клиники'){
-                            if (this.$route.query.clinic){
-                                window.history.pushState("", "Title", '/employee?clinic='+this.$route.query.clinic);
-                            }
-                            else {
-                                let clinicId = this.getIdByName(this.clinics,this.clinic);
-                                window.history.pushState("", "Title", '/employee?clinic='+clinicId);
-                            }
-                            this.getAllEmployees();
-                        }
-                        else{
-                            window.history.pushState("", "Title", '/employee');
-                            this.getAllEmployees();
-                        }
-                    }
-                    else  if (id != this.$route.query.spec){
-                        if (this.$route.query.clinic || this.clinic && this.clinic != 'Все клиники'){
-                            if (this.$route.query.clinic) {
-                                window.history.pushState("", "Title", '/employee?spec=' + id + '&clinic=' + this.$route.query.clinic);
-                            }
-                            else {
-                                let clinicId = this.getIdByName(this.clinics,this.clinic);
-                                window.history.pushState("", "Title", '/employee?spec=' + id + '&clinic=' + clinicId);
-                            }
-                            this.getAllEmployees();
-                        }
-                        else {
-                            window.history.pushState("", "Title", '/employee?spec=' + id);
-                            this.getAllEmployees();
-                        }
-                    }
+                    pushNewState(this.employeeSpec, this.spec, this.clinics, this.clinic,
+                        'employee','spec','clinic',);
+                    this.getAllEmployees();
                 }
             },
             clinic: function (newTemplate, oldTemplate) {
                 if (newTemplate != oldTemplate){
-                    let id = this.getIdByName(this.clinics,this.clinic);
-                    if (!id){
-                        this.clinic = "Все клиники";
-                        if (this.$route.query.spec || this.spec && this.spec != 'Все специальности') {
-                            if(this.$route.query.spec)  {
-                                window.history.pushState("", "Title", '/employee?spec=' + this.$route.query.spec);
-                            } else {
-                                let specId = this.getIdByName(this.employeeSpec, this.spec);
-                                window.history.pushState("", "Title", '/employee?spec=' + specId);
-                            }
-                            this.getAllEmployees();
-                        }
-                        else{
-                            window.history.pushState("", "Title", '/employee');
-                            this.getAllEmployees();
-                        }
-                    }
-                    else if (id != this.$route.query.clinic){
-                        if (this.$route.query.spec || this.spec && this.spec != 'Все специальности'){
-                            if (this.$route.query.spec) {
-                                window.history.pushState("", "Title", '/employee?spec=' + this.$route.query.spec + '&clinic=' + id);
-                            }
-                            else if (this.spec){
-                                let specId = this.getIdByName(this.employeeSpec, this.spec);
-                                window.history.pushState("", "Title", '/employee?spec=' + specId + '&clinic=' + id);
-                            }
-                            this.getAllEmployees();
-                        }
-                        else {
-                            window.history.pushState("", "Title",  '/employee?clinic='+id);
-                            this.getAllEmployees();
-                        }
-                    }
+                    pushNewState(this.clinics, this.clinic,this.employeeSpec, this.spec,
+                        'employee','clinic','spec');
+                    this.getAllEmployees();
                 }
             }
         },
@@ -146,29 +84,25 @@
                 if(!page)
                     page = 1;
                 let url = '/api/employee?page='+page
-                if (this.spec && this.spec != 'Все специальности'){
-                    let id = this.getIdByName(this.employeeSpec, this.spec);
-                    url += '&spec='+id;
+                if (this.spec){
+                    if (this.spec != 'Все специальности') {
+                        let id = getIdByName(this.employeeSpec, this.spec);
+                        url += '&spec=' + id;
+                    }
                 }
                 else if(this.$route.query.spec){
                     url += '&spec='+this.$route.query.spec;
-                    this.employeeSpec.forEach(spec=>{
-                        if (spec.id == this.$route.query.spec){
-                            this.spec = spec.name;
-                        }
-                    })
+                    this.spec = getVariableFromQuery(this.employeeSpec,this.$route.query.spec)
                 }
-                if (this.clinic && this.clinic != 'Все клиники'){
-                    let id = this.getIdByName(this.clinics,this.clinic);
-                    url+='&clinic='+id;
+                if (this.clinic){
+                    if (this.clinic != 'Все клиники') {
+                        let id = getIdByName(this.clinics, this.clinic);
+                        url += '&clinic=' + id;
+                    }
                 }
                 else if (this.$route.query.clinic){
                     url+='&clinic='+this.$route.query.clinic;
-                    this.clinics.forEach(clinic=>{
-                        if (clinic.id == this.$route.query.clinic){
-                            this.clinic = clinic.name;
-                        }
-                    })
+                    this.clinic = getVariableFromQuery(this.clinics, this.$route.query.clinic)
                 }
                 this.$http.get(url).then(function (response) {
                     this.employees = response.body.pageList;
@@ -183,15 +117,6 @@
                 this.$http.delete('/api/employee?id='+id).then(function (response) {
                     window.location.href = '/employee';
                 })
-            },
-            getIdByName(elements,name){
-                let id;
-                elements.forEach(element=>{
-                    if (name == element.name){
-                        id = element.id;
-                    }
-                });
-                return id;
             }
         },
         created() {

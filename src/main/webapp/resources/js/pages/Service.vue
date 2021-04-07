@@ -41,6 +41,7 @@
 
 <script>
     import ServiceDialog from "../components/ServiceDialog.vue";
+    import {getIdByName,getVariableFromQuery,pushNewState} from "../methods.js";
     window.addEventListener('popstate', e=>{
         window.location.reload();
     });
@@ -57,79 +58,17 @@
         watch: {
             type: function (newTemplate, oldTemplate) {
                 if (newTemplate != oldTemplate){
-                    let id = this.getIdByName(this.serviceType, this.type);
-                    if (!id){
-                        this.type = "Все услуги";
-                        if (this.$route.query.clinic || this.clinic && this.clinic != 'Все клиники'){
-                            if (this.$route.query.clinic){
-                                window.history.pushState("", "Title", '/service?clinic='+this.$route.query.clinic);
-                            }
-                            else {
-                                let clinicId = this.getIdByName(this.clinics,this.clinic);
-                                window.history.pushState("", "Title", '/service?clinic='+clinicId);
-                            }
-                            this.getAllService();
-                        }
-                        else{
-                            window.history.pushState("", "Title", '/service');
-                            this.getAllService();
-                        }
-                    }
-                    else  if (id != this.$route.query.serviceType){
-                        if (this.$route.query.clinic || this.clinic && this.clinic != 'Все клиники'){
-                            if (this.$route.query.clinic) {
-                                window.history.pushState("", "Title", '/service?serviceType=' + id + '&clinic=' + this.$route.query.clinic);
-                            }
-                            else {
-                                let clinicId = this.getIdByName(this.clinics,this.clinic);
-                                window.history.pushState("", "Title", '/service?serviceType=' + id + '&clinic=' + clinicId);
-                            }
-                            this.getAllService();
-                        }
-                        else {
-                            window.history.pushState("", "Title", '/service?serviceType=' + id);
-                            this.getAllService();
-                        }
-                    }
+                    pushNewState(this.serviceType, this.type, this.clinics, this.clinic,
+                        'service','serviceType','clinic');
+                    this.getAllService();
                 }
             },
             clinic: function (newTemplate, oldTemplate) {
-              if (newTemplate != oldTemplate){
-                  let id = this.getIdByName(this.clinics,this.clinic);
-                  if (!id){
-                      this.clinic = "Все клиники";
-                      if (this.$route.query.serviceType || this.type && this.type != 'Все услуги' ){
-                          if (this.$route.query.serviceType ) {
-                              window.history.pushState("", "Title", '/service?serviceType=' + this.$route.query.serviceType);
-                          }
-                          else {
-                              let serviceId = this.getIdByName(this.serviceType, this.type);;
-                              window.history.pushState("", "Title", '/service?serviceType='+serviceId);
-                          }
-                          this.getAllService();
-                      }
-                      else{
-                          window.history.pushState("", "Title", '/service');
-                          this.getAllService();
-                      }
-                  }
-                  else if (id != this.$route.query.clinic){
-                      if (this.$route.query.serviceType || this.type && this.type != 'Все услуги'){
-                          if (this.$route.query.serviceType) {
-                              window.history.pushState("", "Title", '/service?serviceType=' + this.$route.query.serviceType + '&clinic=' + id);
-                          }
-                          else if (this.type){
-                              let serviceId = this.getIdByName(this.serviceType, this.type);;
-                              window.history.pushState("", "Title", '/service?serviceType=' + serviceId + '&clinic=' + id);
-                          }
-                          this.getAllService();
-                      }
-                      else {
-                          window.history.pushState("", "Title",  '/service?clinic='+id);
-                          this.getAllService();
-                      }
-                  }
-              }
+                if (newTemplate != oldTemplate){
+                    pushNewState(this.clinics, this.clinic,this.serviceType, this.type,
+                        'service','clinic','serviceType');
+                    this.getAllService();
+                }
             }
         },
         methods :{
@@ -137,29 +76,25 @@
                 if(!page)
                     page = 1;
                 let url = '/api/service?page='+page
-                if (this.type && this.type != 'Все услуги'){
-                    let id = this.getIdByName(this.serviceType, this.type);
-                    url += '&serviceType='+id;
+                if (this.type){
+                    if (this.type != 'Все услуги') {
+                        let id = getIdByName(this.serviceType, this.type);
+                        url += '&serviceType=' + id;
+                    }
                 }
                 else if(this.$route.query.serviceType){
                     url += '&serviceType='+this.$route.query.serviceType;
-                    this.serviceType.forEach(serviceType=>{
-                        if (serviceType.id == this.$route.query.serviceType){
-                            this.type = serviceType.name;
-                        }
-                    })
+                    this.type = getVariableFromQuery(this.serviceType,this.$route.query.serviceType)
                 }
-                if (this.clinic && this.clinic != 'Все клиники'){
-                    let id = this.getIdByName(this.clinics,this.clinic);
-                    url+='&clinic='+id;
+                if (this.clinic){
+                    if (this.clinic != 'Все клиники') {
+                        let id = getIdByName(this.clinics, this.clinic);
+                        url += '&clinic=' + id;
+                    }
                 }
                 else if (this.$route.query.clinic){
                     url+='&clinic='+this.$route.query.clinic;
-                    this.clinics.forEach(clinic=>{
-                        if (clinic.id == this.$route.query.clinic){
-                            this.clinic = clinic.name;
-                        }
-                    })
+                    this.clinic = getVariableFromQuery(this.clinics, this.$route.query.clinic)
                 }
                 this.$http.get(url).then(function (response) {
                     this.services = response.data.content;
@@ -171,15 +106,6 @@
                 this.$http.delete('/api/service?id='+id).then(function (response) {
                     window.location.href = '/service';
                 })
-            },
-            getIdByName(elements,name){
-                let id;
-                elements.forEach(element=>{
-                    if (name == element.name){
-                        id = element.id;
-                    }
-                });
-                return id;
             }
         },
         created() {

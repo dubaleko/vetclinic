@@ -84,6 +84,9 @@
                 this.dialog = false;
             },
             save(){
+                if (this.user.role == 'MODERATOR' && !this.clinic){
+                    this.clinic = this.user.clinic;
+                }
                 this.$v.$touch()
                 if (this.$v.$invalid || !this.name.match(this.onlyChar) || !this.position.match(this.onlyChar)){
                     return

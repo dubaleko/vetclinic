@@ -70,7 +70,10 @@
                 this.dialog = false;
             },
             save(){
-                this.$v.$touch()
+                if (this.user.role == 'MODERATOR' && !this.clinic){
+                    this.clinic = this.user.clinic;
+                }
+                this.$v.$touch();
                 if (this.$v.$invalid || !this.serviceName.match('^[а-яА-ЯёЁ0-9()-/ ]+$')
                     || !this.serviceCost.toString().match('^[0-9]*[.]?[0-9]+$')){
                     return
