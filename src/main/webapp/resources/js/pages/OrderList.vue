@@ -3,7 +3,7 @@
         <authenticated/>
     </v-container>
     <v-container v-else-if="user">
-        <h1>Ваши талоны</h1>
+        <h1>Талоны</h1>
         <table width="100%">
             <tr class="bottom-border" v-for="order in orders" :key="order.id">
                 <td v-if="user.role == 'ADMIN'" align="left">{{order.user.userName}}</td>
