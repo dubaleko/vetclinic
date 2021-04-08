@@ -7,11 +7,19 @@ function getIdByName(elements,name){
     });
     return id;
 }
+function getObjectByName(elements,name){
+    let object;
+    elements.forEach(element=>{
+        if (element.name == name){
+            object = element;
+        }
+    })
+    return object;
+}
 function getVariableFromQuery(elements, query){
     let value;
     elements.forEach(element=>{
         if (element.id == query){
-            query = null;
             value = element.name;
         }
     })
@@ -38,5 +46,18 @@ function pushNewState(firstList, firstValue, secondList, secondValue, page, name
         }
     }
 }
+function checkQueryParameter(elements,element,query,page,text) {
+    let url = "";
+    if (element){
+        if (element != text) {
+            let id = getIdByName(elements, element);
+            url += '&'+page+'=' + id;
+        }
+    }
+    else if(query){
+        url += '&'+page+'='+query;
+    }
+    return url;
+}
 
-export {getIdByName, getVariableFromQuery,pushNewState}
+export {getIdByName, getObjectByName, getVariableFromQuery,pushNewState, checkQueryParameter}

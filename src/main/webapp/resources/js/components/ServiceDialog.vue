@@ -35,6 +35,7 @@
 
 <script>
     import {required} from 'vuelidate/lib/validators'
+    import {getObjectByName} from "../methods.js";
     export default {
         props:['action','types','typeNames','service','user','clinics','clinicsName'],
         name: "ServiceDialog",
@@ -70,7 +71,10 @@
                 this.dialog = false;
             },
             save(){
-                if (this.user.role == 'MODERATOR' && !this.clinic){
+                if (this.user.role == 'ADMIN'){
+                    this.clinic = getObjectByName(this.clinics,this.clinic);
+                }
+                else {
                     this.clinic = this.user.clinic;
                 }
                 this.$v.$touch();
@@ -78,25 +82,9 @@
                     || !this.serviceCost.toString().match('^[0-9]*[.]?[0-9]+$')){
                     return
                 }else {
-                    let serviceType = null;
-                    this.types.forEach(element=>{
-                        if (element.name == this.serviceType){
-                            serviceType = element;
-                        }
-                    })
-                    if (this.user.role == 'ADMIN'){
-                        this.clinics.forEach(clinic=>{
-                            if (clinic.name == this.clinic){
-                                this.clinic = clinic;
-                            }
-                        })
-                    }
-                    else {
-                        this.clinic = this.user.clinic;
-                    }
+                    let serviceType = getObjectByName(this.types,this.serviceType);
                     let service = {id : this.id ,serviceName: this.serviceName, serviceCost: this.serviceCost,
                         serviceType:serviceType, clinic: this.clinic}
-                    this.dialog = false;
                     if (this.action == "Добавить новую услугу"){
                         this.$http.post('/api/service',service).then(function (response) {
                             window.location.href = '/service';

@@ -16,7 +16,7 @@
             </tr>
         </table>
         <v-row align="center" justify="center" v-if="orders.length < 1">
-            Извините но у вас нет активных талонов
+            Извините но мы не смогли найти у вас талонов на прием к врачу
         </v-row>
         <v-pagination v-if="totalPages > 1" @input="getOrderList" v-model="page" :length="totalPages" :total-visible="7"
                       prev-icon="arrow_back" next-icon="arrow_forward"></v-pagination>
@@ -37,14 +37,13 @@
         },
         methods : {
             getOrderList(){
+                let options = {month: 'long', day: 'numeric', weekday: 'long',};
                 if (!this.page)
                     this.page = 1;
                 this.$http.get('/api/order?id='+this.user.id+'&page='+this.page).then(function (response){;
                     this.orders = response.body.pageList;
                     this.totalPages = response.body.pageCount;
                     this.page = response.body.page+1;
-
-                    let options = {month: 'long', day: 'numeric', weekday: 'long',};
                     for (let i = 0; i< this.orders.length; i++){
                         let date = new Date(this.orders[i].receptionDateDto.date);
                         this.orders[i].dateString = date.toLocaleString("ru", options);

@@ -48,7 +48,7 @@
 
 <script>
     import EmployeeDialog from "../components/EmployeeDialog.vue";
-    import {getIdByName,getVariableFromQuery,pushNewState} from "../methods.js";
+    import {getVariableFromQuery,pushNewState,checkQueryParameter} from "../methods.js";
     window.addEventListener('popstate', e=>{
         window.location.reload();
     });
@@ -84,24 +84,14 @@
                 if(!page)
                     page = 1;
                 let url = '/api/employee?page='+page
-                if (this.spec){
-                    if (this.spec != 'Все специальности') {
-                        let id = getIdByName(this.employeeSpec, this.spec);
-                        url += '&spec=' + id;
-                    }
+                url += checkQueryParameter(this.employeeSpec,this.spec,this.$route.query.spec,
+                    'spec','Все специальности');
+                if (!this.spec && this.$route.query.spec){
+                    this.spec = getVariableFromQuery(this.employeeSpec, this.$route.query.spec);
                 }
-                else if(this.$route.query.spec){
-                    url += '&spec='+this.$route.query.spec;
-                    this.spec = getVariableFromQuery(this.employeeSpec,this.$route.query.spec)
-                }
-                if (this.clinic){
-                    if (this.clinic != 'Все клиники') {
-                        let id = getIdByName(this.clinics, this.clinic);
-                        url += '&clinic=' + id;
-                    }
-                }
-                else if (this.$route.query.clinic){
-                    url+='&clinic='+this.$route.query.clinic;
+                url += checkQueryParameter(this.clinics,this.clinic,this.$route.query.clinic,
+                    'clinic','Все клиники');
+                if (!this.clinic && this.$route.query.clinic) {
                     this.clinic = getVariableFromQuery(this.clinics, this.$route.query.clinic)
                 }
                 this.$http.get(url).then(function (response) {

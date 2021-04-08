@@ -41,6 +41,7 @@
 
 <script>
     import {required} from 'vuelidate/lib/validators'
+    import {getObjectByName} from "../methods.js";
     export default {
         name: "EmployeeDialog",
         props:['action','specName','spec','employee', 'user','clinics','clinicsName'],
@@ -84,7 +85,10 @@
                 this.dialog = false;
             },
             save(){
-                if (this.user.role == 'MODERATOR' && !this.clinic){
+                if (this.user.role == 'ADMIN'){
+                    this.clinic = getObjectByName(this.clinics,this.clinic);
+                }
+                else {
                     this.clinic = this.user.clinic;
                 }
                 this.$v.$touch()
@@ -101,19 +105,8 @@
                         })
                     })
                     this.employeeWorkDay.forEach(dayName=>{
-                        let object = {id:null,dayName:dayName,employees:null}
-                        employeeDays.push(object);
+                        employeeDays.push({id:null,dayName:dayName,employees:null});
                     })
-                    if (this.user.role == 'ADMIN'){
-                        this.clinics.forEach(clinic=>{
-                            if (clinic.name == this.clinic){
-                                this.clinic = clinic;
-                            }
-                        })
-                    }
-                    else {
-                        this.clinic = this.user.clinic;
-                    }
                     let employee = {id : this.id ,name: this.name, position:this.position,clinic: this.clinic,
                         education: this.education, specs: employeeSpecs,days:employeeDays};
                     if (this.action == "Добавить нового сотрудника"){

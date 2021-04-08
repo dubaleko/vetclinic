@@ -51,7 +51,6 @@
                     this.$http.post('/api/users', user).then(function (response) {
                         window.location.href='/';
                     }, (response) => {
-                        console.log(response)
                         this.responseCode = response.status;
                         this.responseStatus = 'Пользователь с таким именем уже существует';
                     })

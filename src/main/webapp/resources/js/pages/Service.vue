@@ -41,7 +41,7 @@
 
 <script>
     import ServiceDialog from "../components/ServiceDialog.vue";
-    import {getIdByName,getVariableFromQuery,pushNewState} from "../methods.js";
+    import {getVariableFromQuery,pushNewState,checkQueryParameter} from "../methods.js";
     window.addEventListener('popstate', e=>{
         window.location.reload();
     });
@@ -76,24 +76,14 @@
                 if(!page)
                     page = 1;
                 let url = '/api/service?page='+page
-                if (this.type){
-                    if (this.type != 'Все услуги') {
-                        let id = getIdByName(this.serviceType, this.type);
-                        url += '&serviceType=' + id;
-                    }
+                url+= checkQueryParameter(this.serviceType,this.type,this.$route.query.serviceType,
+                    'serviceType','Все услуги');
+                if (!this.type && this.$route.query.serviceType){
+                    this.type = getVariableFromQuery(this.serviceType,this.$route.query.serviceType);
                 }
-                else if(this.$route.query.serviceType){
-                    url += '&serviceType='+this.$route.query.serviceType;
-                    this.type = getVariableFromQuery(this.serviceType,this.$route.query.serviceType)
-                }
-                if (this.clinic){
-                    if (this.clinic != 'Все клиники') {
-                        let id = getIdByName(this.clinics, this.clinic);
-                        url += '&clinic=' + id;
-                    }
-                }
-                else if (this.$route.query.clinic){
-                    url+='&clinic='+this.$route.query.clinic;
+                url += checkQueryParameter(this.clinics,this.clinic,this.$route.query.clinic,
+                    'clinic','Все клиники');
+                if (!this.clinic && this.$route.query.clinic) {
                     this.clinic = getVariableFromQuery(this.clinics, this.$route.query.clinic)
                 }
                 this.$http.get(url).then(function (response) {

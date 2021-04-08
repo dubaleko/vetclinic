@@ -29,6 +29,7 @@
 
 <script>
     import {required} from 'vuelidate/lib/validators'
+    import {getObjectByName} from "../methods.js";
     export default {
         props:['action','user'],
         name: "UserDialog",
@@ -64,23 +65,16 @@
             },
             save(){
                 this.$v.$touch();
-                if (this.$v.$invalid || this.role == 'MODERATOR' && !this.clinic || this.role == 'DOCTOR' && !this.doctor ){
+                if (this.$v.$invalid || this.role == 'MODERATOR' && !this.clinic
+                    || this.role == 'DOCTOR' && !this.doctor ){
                     return
                 }else {
                     if (this.role =='MODERATOR'){
-                        this.clinics.forEach(clinic=>{
-                            if (clinic.name == this.clinic){
-                                this.clinic = clinic;
-                            }
-                        })
+                        this.clinic = getObjectByName(this.clinics,this.clinic);
                         this.doctor = null;
                     }
                     else if (this.role == 'DOCTOR'){
-                        this.doctors.forEach(doctor=>{
-                            if (doctor.name == this.doctor){
-                                this.doctor = doctor;
-                            }
-                        })
+                        this.doctor = getObjectByName(this.doctors,this.doctor);
                         this.clinic = null;
                     }
                     else {
@@ -88,7 +82,6 @@
                     }
                     let user = {id: this.id, userName: this.name, password: this.myUser.password,
                         role: this.role, clinic: this.clinic, doctor: this.doctor};
-                    this.dialog = false;
                     this.$http.put('/api/users',user).then(function (response) {
                         window.location.href = '/users';
                     })
