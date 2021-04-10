@@ -106,8 +106,14 @@ public class EmployeeService {
             List<WeekDayDto> oldDays =  receptionDateService.getDifferentDays(employee);
             List<WeekDayDto> addDays = checkDays(newDays,oldDays);
             List<WeekDayDto> deleteDays = checkDays(oldDays,newDays);
-            if (addDays.size() != 0 || deleteDays.size() != 0)
-                receptionDateService.updateReceptionAndDate(addDays,deleteDays,employee);
+            if (addDays.size() != 0 || deleteDays.size() != 0) {
+                receptionDateService.updateReceptionAndDate(addDays, deleteDays, employee);
+            }
+            Employee oldEmployee = employeeRepository.getOne(employee.getId());
+            if (employee.getStartWork() != oldEmployee.getStartWork()
+                    || employee.getEndWork() != oldEmployee.getEndWork()){
+                receptionDateService.updateReceptionAndDate(newDays,oldDays,employee);
+            }
         }
     }
 

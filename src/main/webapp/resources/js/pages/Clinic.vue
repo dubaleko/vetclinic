@@ -27,7 +27,7 @@
             <v-pagination v-if="totalPages > 1" @input="getAllClinics" v-model="page" :length="totalPages" :total-visible="7"
                           prev-icon="arrow_back" next-icon="arrow_forward"></v-pagination>
         </v-row>
-        <v-row align="center" justify="center" v-if="clinics.length< 1">
+        <v-row align="center" justify="center" v-if="emptyClinics">
             Извините но по вашему запросу не найдено ветеринарных клиник
         </v-row>
     </v-container>
@@ -41,7 +41,7 @@
         props:['user'],
         data(){
             return{
-                page : null, totalPages: null, searchCity: '',
+                page : null, totalPages: null, searchCity: '', emptyClinics: false,
                 emptyClinic : {}, clinics : [], cities: []
             }
         },
@@ -66,6 +66,10 @@
                         clinic.serviceUrl = '/service?clinic='+clinic.id;
                         clinic.employeeUrl = '/employee?clinic='+clinic.id;
                     })
+                    this.emptyClinics = false;
+                    if (this.clinics.length < 1){
+                        this.emptyClinics = true;
+                    }
                 })
             },
             deleteClinic(id){

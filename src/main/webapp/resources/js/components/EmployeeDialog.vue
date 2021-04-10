@@ -27,9 +27,26 @@
                 <h5 class="validationError" v-if="!$v.employeeSpecName.required && $v.employeeSpecName.$dirty">
                     Специализация не может быть пустой</h5>
                 <v-select multiple chips v-model="employeeSpecName" :items="specName" label="Специализация"/>
-                <h5 class="validationError" v-if="!$v.employeeWorkDay.required && $v.employeeWorkDay.$dirty">
-                    У сотрудника должен быть хотя бы 1 рабочий день</h5>
-                <v-select multiple chips v-model="employeeWorkDay" :items="daysName" label="Рабочие дни"/>
+                <h5 class="validationError" v-if="$v.employeeWorkDay.$dirty && this.employeeWorkDay.length == 0
+                                            && !this.vacation">Должен быть хотя бы 1 рабочий день</h5>
+                <v-select :disabled="vacation" multiple chips v-model="employeeWorkDay" :items="daysName" label="Рабочие дни"/>
+                <h5 class="validationError" v-if="$v.startWork.$dirty && this.startWork > this.endWork && !this.vacation">
+                    Рабочий день не может начинатся позже чем заканчивается</h5>
+                <v-row align="center">
+                    <v-col >
+                        <h5 class="validationError" v-if="$v.startWork.$dirty && !this.startWork && !this.vacation">
+                            Должно быть время начала рабочего дня</h5>
+                        <v-select :disabled="vacation" v-model="startWork" :items="timesValues"
+                                  label="Начало рабочего дня"/>
+                    </v-col>
+                    <v-col>
+                        <h5 class="validationError" v-if="$v.endWork.$dirty && !this.endWork && !this.vacation">
+                            Должно быть время конца рабочего дня</h5>
+                        <v-select :disabled="vacation"  v-model="endWork" :items="timesValues"
+                                  label="Конец рабочего дня"/>
+                    </v-col>
+                </v-row>
+                <input v-model="vacation" type="checkbox"> Сотрудник не доступен для записи онлайн
             </v-card-text>
             <v-card-actions>
                 <v-btn color="blue darken-1" text @click="save">Сохранить</v-btn>
@@ -46,14 +63,24 @@
         name: "EmployeeDialog",
         props:['action','specName','spec','employee', 'user','clinics','clinicsName'],
         data: () => ({
-            dialog: false,  position : '', education: '', employeeWorkDay : [],
-            id: '', name: '', clinic: '',  onlyChar: '^[а-яА-ЯёЁ ]+$', myEmployee: null,
-            employeeSpecName : [], daysName :['Понедельник','Вторник','Среда','Четверг',
-            'Пятница','Суббота','Воскресенье']
+            dialog: false,  myEmployee: null, onlyChar: '^[а-яА-ЯёЁ ]+$',
+            id: '', name: '', clinic: '', position : '', education: '', vacation: null, employeeWorkDay : [],
+            employeeSpecName : [], times: [], timesValues:[], startWork:null, endWork:null,
+            daysName :['Понедельник','Вторник','Среда','Четверг', 'Пятница','Суббота','Воскресенье']
         }),
         validations:{
-            name: {required}, education: {required}, employeeWorkDay: {required},
-            position: {required}, employeeSpecName: {required}, clinic: {required}
+            name: {required}, education: {required}, employeeWorkDay: {}, position: {required},
+            employeeSpecName: {required}, clinic: {required}, startWork:{}, endWork:{}
+        },
+        watch:{
+            vacation: function (newTemplate, oldTemplate) {
+                if (newTemplate != oldTemplate){
+                    if (this.vacation) {
+                        this.employeeWorkDay = [];
+                        this.startWork = this.endWork = null;
+                    }
+                }
+            },
         },
         updated(){
             if (this.myEmployee != this.employee) {
@@ -77,6 +104,13 @@
                         this.employeeWorkDay.push(element.dayName);
                     })
                 }
+                this.vacation = this.employee.onVacation;
+                if (this.employee.startWork) {
+                    this.startWork = this.employee.startWork.time;
+                }
+                if (this.employee.endWork) {
+                    this.endWork = this.employee.endWork.time;
+                }
                 this.myEmployee = this.employee;
             }
         },
@@ -91,8 +125,10 @@
                 else {
                     this.clinic = this.user.clinic;
                 }
-                this.$v.$touch()
-                if (this.$v.$invalid || !this.name.match(this.onlyChar) || !this.position.match(this.onlyChar)){
+                this.$v.$touch();
+                if (this.$v.$invalid || !this.name.match(this.onlyChar) || !this.position.match(this.onlyChar) ||
+                    this.employeeWorkDay.length == 0 && !this.vacation || !this.startWork && !this.vacation ||
+                    !this.endWork && !this.vacation || this.startWork > this.endWork){
                     return
                 }else {
                     let employeeSpecs = [];
@@ -107,8 +143,17 @@
                     this.employeeWorkDay.forEach(dayName=>{
                         employeeDays.push({id:null,dayName:dayName,employees:null});
                     })
+                    this.times.forEach(element=>{
+                        if (element.time == this.startWork){
+                            this.startWork = element;
+                        }
+                        else if (element.time == this.endWork){
+                            this.endWork = element;
+                        }
+                    });
                     let employee = {id : this.id ,name: this.name, position:this.position,clinic: this.clinic,
-                        education: this.education, specs: employeeSpecs,days:employeeDays};
+                        education: this.education, specs: employeeSpecs,days:employeeDays, startWork: this.startWork,
+                        endWork: this.endWork, onVacation: this.vacation};
                     if (this.action == "Добавить нового сотрудника"){
                         this.$http.post('/api/employee',employee).then(function (response) {
                             window.location.href = '/employee';
@@ -121,6 +166,14 @@
                     }
                 }
             }
+        },
+        created() {
+            this.$http.get('/api/employee/workTime').then(function (response) {
+                this.times = response.data;
+                this.times.forEach(element=>{
+                    this.timesValues.push(element.time);
+                })
+            })
         }
     }
 </script>

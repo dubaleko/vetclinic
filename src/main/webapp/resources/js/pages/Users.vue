@@ -17,7 +17,7 @@
                 </td>
             </tr>
         </table>
-        <v-row align="center" justify="center" v-if="users.length < 1">
+        <v-row align="center" justify="center" v-if="this.emptyUsers">
             Пользователей с подобным именем не было найдено
         </v-row>
         <v-pagination v-if="totalPages > 1" @input="getAllUsers" v-model="page" :length="totalPages" :total-visible="7"
@@ -33,7 +33,7 @@
         props:['user'],
         data(){
             return {
-                page : null, totalPages: null, users: [], name: ''
+                page: null, totalPages: null, emptyUsers: false, name: '', users: []
             }
         },
         watch: {
@@ -53,6 +53,10 @@
                     this.users = response.body.pageList;
                     this.totalPages = response.body.pageCount;
                     this.page = response.body.page+1;
+                    this.emptyUsers = false;
+                    if (this.users.length < 1){
+                        this.emptyUsers = true;
+                    }
                 })
             },
             deleteUser(id){

@@ -20,10 +20,10 @@ public class User {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @ManyToOne(optional = true)
+    @ManyToOne
     @JoinColumn(name = "clinic")
-    Clinic clinic;
-    @ManyToOne(optional = true)
+    private Clinic clinic;
+    @ManyToOne
     @JoinColumn(name = "doctor")
-    Employee doctor;
+    private Employee doctor;
 }

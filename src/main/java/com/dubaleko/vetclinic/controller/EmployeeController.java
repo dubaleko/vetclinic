@@ -2,7 +2,8 @@ package com.dubaleko.vetclinic.controller;
 
 import com.dubaleko.vetclinic.dto.EmployeeDto;
 import com.dubaleko.vetclinic.entity.Employee;
-import com.dubaleko.vetclinic.repository.EmployeeRepository;
+import com.dubaleko.vetclinic.entity.WorkTime;
+import com.dubaleko.vetclinic.repository.WorkTimeRepository;
 import com.dubaleko.vetclinic.service.EmployeeService;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.http.HttpStatus;
@@ -15,9 +16,11 @@ import java.util.Optional;
 @RequestMapping("api/employee")
 public class EmployeeController {
     private final EmployeeService employeeService;
+    private final WorkTimeRepository workTimeRepository;
 
-    public EmployeeController(EmployeeService employeeService) {
+    public EmployeeController(EmployeeService employeeService, WorkTimeRepository workTimeRepository) {
         this.employeeService = employeeService;
+        this.workTimeRepository = workTimeRepository;
     }
 
     @GetMapping
@@ -32,6 +35,12 @@ public class EmployeeController {
     @ResponseStatus(HttpStatus.OK)
     public List<EmployeeDto> allEmployees(){
         return  employeeService.getAllEmployees();
+    }
+
+    @GetMapping("workTime")
+    @ResponseStatus(HttpStatus.OK)
+    public List<WorkTime> getWorkTime(){
+       return workTimeRepository.findAll();
     }
 
     @PostMapping

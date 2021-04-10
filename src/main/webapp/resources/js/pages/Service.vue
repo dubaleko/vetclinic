@@ -31,7 +31,7 @@
                     </div>
             </div>
         </table>
-        <v-row align="center" justify="center" v-if="services.length < 1">
+        <v-row align="center" justify="center" v-if="emptyServices">
             Извините но по вашему запросу не найдено никаких услуг
         </v-row>
         <v-pagination v-if="totalPages > 1" @input="getAllService" v-model="page" :length="totalPages" :total-visible="7"
@@ -51,8 +51,8 @@
         data(){
             return{
                 type : null, page : null, totalPages: null, emptyService : null,
-                services:[], serviceType:[], serviceTypeNames:[], myServices:[],
-                clinicsName:[], clinics:[], clinic:null, myClinics:[]
+                emptyServices: false,services:[], serviceType:[], serviceTypeNames:[],
+                myServices:[], clinicsName:[], clinics:[], clinic:null, myClinics:[]
             }
         },
         watch: {
@@ -90,6 +90,10 @@
                     this.services = response.data.content;
                     this.totalPages = response.data.totalPages;
                     this.page = response.data.pageable.pageNumber+1;
+                    this.emptyServices = null;
+                    if (this.services.length < 1){
+                        this.emptyServices = true;
+                    }
                 })
             },
             deleteService(id){

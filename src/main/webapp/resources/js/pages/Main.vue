@@ -8,7 +8,8 @@
                 <td align="right">{{service.serviceCost.toFixed(2)}} р.</td>
             </tr>
         </table>
-        <v-btn color="blue" class="white--text" href="/service">Просмотреть все услуги</v-btn>
+        <div class="mb-2"/>
+        <v-btn  color="blue" class="white--text" href="/service">Просмотреть все услуги</v-btn>
         <h1>Клиники</h1>
         <v-card class="my-2" width="100%" v-for="clinic in clinicPreview" :key="clinic.name">
             <v-card-title>{{clinic.name}}</v-card-title>
@@ -16,7 +17,7 @@
                 <h3>Адрес: {{clinic.city}}  {{clinic.address}}</h3>
                 <h3>Описание: {{clinic.description}}</h3>
             </v-card-text>
-        </v-card><br>
+        </v-card>
         <v-btn color="blue" class="white--text" href="/clinic">Просмотреть всех клиники</v-btn>
         <notifications position="bottom right" group="success" />
     </v-container>
@@ -51,6 +52,7 @@
 </script>
 
 <style scoped>
+    v-btn {margin-top: 20%;}
     table {width: 100%;}
     TD { border-bottom: 1px black dashed;}
     TD:first-child{width: 70%}

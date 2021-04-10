@@ -20,9 +20,9 @@ public class Service {
     private double serviceCost;
     @ManyToOne(optional = false)
     @JoinColumn(name = "serviceType")
-    ServiceType serviceType;
+    private ServiceType serviceType;
     @ManyToOne(optional = false, cascade = CascadeType.REFRESH)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "clinic")
-    Clinic clinic;
+    private Clinic clinic;
 }

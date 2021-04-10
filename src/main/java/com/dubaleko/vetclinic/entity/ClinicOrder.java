@@ -20,17 +20,17 @@ public class ClinicOrder {
     @ManyToOne(cascade = CascadeType.REFRESH)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "userId")
-    User user;
+    private User user;
     @ManyToOne(cascade = CascadeType.REFRESH)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name= "employee")
-    Employee employee;
+    private Employee employee;
     @ManyToOne(cascade = CascadeType.REFRESH)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "date")
-    ReceptionDate receptionDate;
+    private ReceptionDate receptionDate;
     @ManyToOne(cascade = CascadeType.REFRESH)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "time")
-    ReceptionTime receptionTime;
+    private ReceptionTime receptionTime;
 }

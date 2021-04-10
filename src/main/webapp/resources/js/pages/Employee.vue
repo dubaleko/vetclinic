@@ -40,7 +40,7 @@
             <v-pagination v-if="totalPages > 1" @input="getAllEmployees" v-model="page" :length="totalPages" :total-visible="7"
                           prev-icon="arrow_back" next-icon="arrow_forward"></v-pagination>
         </v-row>
-        <v-row align="center" justify="center" v-if="employees.length < 1">
+        <v-row align="center" justify="center" v-if="emptyEmployees">
             Извините но по вашему запросу не найдено сотрудников клиник партнеров
         </v-row>
     </v-container>
@@ -58,7 +58,7 @@
         props:['user'],
         data(){
             return{
-                page : null, totalPages: null, spec: null, emptyEmployee : null,
+                page : null, totalPages: null, spec: null, data: null, emptyEmployees : false,
                 employees: [], employeeSpec : [], specialization: [], mySpecs:[],
                 clinicsName:[], clinics:[], clinic:null, myClinics:[]
             }
@@ -100,7 +100,11 @@
                     this.page = response.body.page+1;
                     this.employees.forEach(element=>{
                         element.url="/order?employee_id="+element.id;
-                    })
+                    });
+                    this.emptyEmployees = false;
+                    if (this.employees.length < 1){
+                        this.emptyEmployees = true;
+                    }
                 })
             },
             deleteEmployee(id){

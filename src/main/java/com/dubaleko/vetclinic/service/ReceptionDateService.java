@@ -125,16 +125,20 @@ public class ReceptionDateService {
     private  void saveDateAndTime(LocalDate date, Employee employee){
         ReceptionDate receptionDate = new ReceptionDate(null, java.sql.Date.valueOf(date), employee);
         receptionDateRepository.save(receptionDate);
-        for (int j = 0; j < 21; j++){
-            Time time = new Time(21600000 + 1800000 * j);
+        Time time = employee.getStartWork().getTime();
+        LocalTime startTime =  time.toLocalTime();
+        LocalTime endTime = employee.getEndWork().getTime().toLocalTime();
+        while (startTime.isBefore(endTime.plusMinutes(1))){
             boolean flag = false;
             if (LocalDate.now().equals(receptionDate.getDate().toLocalDate())){
-                if (LocalTime.now().plusMinutes(10).isAfter(time.toLocalTime())){
+                if (LocalTime.now().plusMinutes(10).isAfter(startTime)){
                     flag = true;
                 }
             }
             ReceptionTime receptionTime = new ReceptionTime(null, time,flag,receptionDate);
             receptionTimeRepository.save(receptionTime);
+            startTime = startTime.plusMinutes(30);
+            time = Time.valueOf(startTime);
         }
     }
 

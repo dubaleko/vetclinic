@@ -21,5 +21,5 @@ public class ReceptionDate {
     @ManyToOne(cascade = CascadeType.REFRESH)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "employee")
-    Employee employee;
+    private Employee employee;
 }
