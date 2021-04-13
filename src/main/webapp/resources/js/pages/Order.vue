@@ -23,7 +23,7 @@
         </div>
         <div v-else-if ="employeeId">
             <v-row justify="center">
-                <v-col v-for="date in receptionDate" :key="date.date">
+                <v-col v-for="date in receptionDate" :key="date.id">
                     <v-card  :elevation="1" >
                         <v-card-title>
                             <v-btn :href="date.url" text>{{date.dateString}}</v-btn>
@@ -45,7 +45,7 @@
                 </v-col>
             </v-row>
             <v-row justify="center">
-                <v-col v-for="employee in employees" :key="employee.name">
+                <v-col v-for="employee in employees" :key="employee.id">
                     <v-card  :elevation="1" >
                         <v-card-title>
                             <v-btn text :href="employee.url">{{employee.name}}</v-btn>

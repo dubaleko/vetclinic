@@ -1,6 +1,6 @@
 <template>
     <div class="centerDiv">
-        <h4>Эта страница доступна только зарегистрированным пользователям</h4>
+        Эта страница доступна только зарегистрированным пользователям
         <div class="littleDiv">
             <login-dialog/>
             <registration-dialog/>

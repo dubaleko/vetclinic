@@ -128,7 +128,7 @@ public class ReceptionDateService {
         Time time = employee.getStartWork().getTime();
         LocalTime startTime =  time.toLocalTime();
         LocalTime endTime = employee.getEndWork().getTime().toLocalTime();
-        while (startTime.isBefore(endTime.plusMinutes(1))){
+        while (startTime.isBefore(endTime)){
             boolean flag = false;
             if (LocalDate.now().equals(receptionDate.getDate().toLocalDate())){
                 if (LocalTime.now().plusMinutes(10).isAfter(startTime)){

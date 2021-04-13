@@ -37,7 +37,7 @@
         },
         methods : {
             getOrderList(){
-                let options = {month: 'long', day: 'numeric', weekday: 'long',};
+                let options = {month: 'long', day: 'numeric', weekday: 'long'};
                 if (!this.page)
                     this.page = 1;
                 this.$http.get('/api/order?id='+this.user.id+'&page='+this.page).then(function (response){;

@@ -2,7 +2,7 @@
     <v-container>
         <h1>Услуги</h1>
         <v-row v-if="user">
-            <service-dialog v-if="user.role == 'MODERATOR' || user.role == 'ADMIN'" :service="emptyService" :user="user"
+            <service-dialog v-if="user.role == 'MODERATOR' || user.role == 'ADMIN'" :user="user"
                             :types="serviceType" :clinics="clinics" :clinics-name="clinicsName"
                             :typeNames="serviceTypeNames" action="Добавить новую услугу">
             </service-dialog>
@@ -15,7 +15,7 @@
             <v-select  v-model="type" :items="myServices" label="Тип услуги"/>
             </v-col>
         </v-row>
-        <table v-for="service in services" :key="service.Name">
+        <table v-for="service in services" :key="service.id">
             <tr class="bottom-border">
                 <td align="left">{{service.serviceName}}</td>
                 <td align="left">{{service.clinic.name}}</td>
@@ -50,8 +50,8 @@
         props:['user'],
         data(){
             return{
-                type : null, page : null, totalPages: null, emptyService : null,
-                emptyServices: false,services:[], serviceType:[], serviceTypeNames:[],
+                type : null, page : null, totalPages: null, emptyServices: false ,
+                services:[], serviceType:[], serviceTypeNames:[],
                 myServices:[], clinicsName:[], clinics:[], clinic:null, myClinics:[]
             }
         },
@@ -90,7 +90,7 @@
                     this.services = response.data.content;
                     this.totalPages = response.data.totalPages;
                     this.page = response.data.pageable.pageNumber+1;
-                    this.emptyServices = null;
+                    this.emptyServices = false;
                     if (this.services.length < 1){
                         this.emptyServices = true;
                     }

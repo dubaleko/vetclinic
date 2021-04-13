@@ -60,4 +60,10 @@ function checkQueryParameter(elements,element,query,page,text) {
     return url;
 }
 
-export {getIdByName, getObjectByName, getVariableFromQuery,pushNewState, checkQueryParameter}
+function formatDate (date) {
+    if (!date) return null
+    const [year, month, day] = date.split('-')
+    return `${month}/${day}/${year}`
+}
+
+export {getIdByName, getObjectByName, getVariableFromQuery,pushNewState, checkQueryParameter, formatDate}

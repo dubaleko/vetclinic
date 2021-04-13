@@ -4,7 +4,7 @@
         <v-row v-if="user">
             <employee-dialog v-if="user.role == 'MODERATOR' || user.role == 'ADMIN'" :specName="specialization"
                              action="Добавить нового сотрудника" :user="user":clinics="clinics"
-                             :clinics-name="clinicsName" :spec="employeeSpec" :employee="emptyEmployee" />
+                             :clinics-name="clinicsName" :spec="employeeSpec" />
         </v-row>
         <v-row align="center">
             <v-col >
@@ -15,7 +15,7 @@
             </v-col>
         </v-row>
         <v-row>
-           <v-card class="my-2" width="100%" v-for="employee in employees" :key="employee.name">
+           <v-card class="my-2" width="100%" v-for="employee in employees" :key="employee.id">
                <v-card-title>{{employee.name}}</v-card-title>
                <v-card-text>
                    <h3>Клиника: {{employee.clinic.name}}</h3>

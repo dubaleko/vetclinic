@@ -1,14 +1,14 @@
 <template>
     <v-container fill-height v-if="user == null || user.role != 'ADMIN'">
         <v-row justify="center">
-            <h4>Извините, нам не удалось найти эту страницу, но мы бросим все силы что бы найти её</h4>
+            Извините, нам не удалось найти эту страницу, но мы бросим все силы что бы найти её
         </v-row>
     </v-container>
     <v-container v-else>
         <h1>Пользователи</h1>
         <v-text-field v-model="name"  label="Имя пользователя"/>
         <table width="100%">
-            <tr class="bottom-border" v-for="user in users" :key="user.Name">
+            <tr class="bottom-border" v-for="user in users" :key="user.id">
                 <td align="left">{{user.userName}}</td>
                 <td align="left">{{user.role}}</td>
                 <td align="right">

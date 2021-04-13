@@ -37,7 +37,7 @@
             return{
                 dialog: false, roles : ['ADMIN','USER','MODERATOR','DOCTOR'],
                 clinics: [], doctors:[], clinicsName:[], doctorsName:[],
-                myUser: '', id: '', name: '', role: '', clinic:null, doctor: null
+                myUser: '',  name: '', role: '', clinic:null, doctor: null
             }
         },
         validations:{
@@ -45,16 +45,13 @@
         },
         updated(){
             if (this.myUser != this.user) {
-                if (this.user.id) {
-                    this.id = this.user.id;
-                    this.name = this.user.userName;
-                    this.role = this.user.role;
-                    if (this.user.clinic) {
-                        this.clinic = this.user.clinic.name;
-                    }
-                    if (this.user.doctor) {
-                        this.doctor = this.user.doctor.name;
-                    }
+                this.name = this.user.userName;
+                this.role = this.user.role;
+                if (this.user.clinic) {
+                    this.clinic = this.user.clinic.name;
+                }
+                if (this.user.doctor) {
+                    this.doctor = this.user.doctor.name;
                 }
                 this.myUser = this.user;
             }
@@ -80,8 +77,10 @@
                     else {
                         this.clinic = this.doctor = null;
                     }
-                    let user = {id: this.id, userName: this.name, password: this.myUser.password,
-                        role: this.role, clinic: this.clinic, doctor: this.doctor};
+                    let user = {id: this.user.id, userName: this.name, password: this.user.password,
+                        role: this.role, clinic: this.clinic, doctor: this.doctor, petName: this.user.petName,
+                        petType: this.user.petType, petAge: this.user.petAge, petGender: this.user.petGender,
+                        ownerName: this.user.ownerName, ownerSecondName: this.user.ownerSecondName};
                     this.$http.put('/api/users',user).then(function (response) {
                         window.location.href = '/users';
                     })

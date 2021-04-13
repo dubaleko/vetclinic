@@ -21,16 +21,17 @@
                 <h5 class="validationError" v-if="!$v.education.required && $v.education.$dirty">
                     Данные об образовании не могут быть пустыми</h5>
                 <v-text-field v-model="education" placeholder="Введите данные об образовании" label="Образование"/>
-                <h5 class="validationError" v-if="!$v.clinic.required && $v.clinic.$dirty">
+                <h5 class="validationError" v-if="!$v.clinicName.required && $v.clinicName.$dirty">
                     Название клиники не может быть пустым</h5>
-                <v-select v-if="user.role == 'ADMIN'" v-model="clinic" :items="clinicsName" label="Название клиники"/>
+                <v-select v-if="user.role == 'ADMIN'" v-model="clinicName" :items="clinicsName" label="Название клиники"/>
                 <h5 class="validationError" v-if="!$v.employeeSpecName.required && $v.employeeSpecName.$dirty">
                     Специализация не может быть пустой</h5>
                 <v-select multiple chips v-model="employeeSpecName" :items="specName" label="Специализация"/>
                 <h5 class="validationError" v-if="$v.employeeWorkDay.$dirty && this.employeeWorkDay.length == 0
                                             && !this.vacation">Должен быть хотя бы 1 рабочий день</h5>
                 <v-select :disabled="vacation" multiple chips v-model="employeeWorkDay" :items="daysName" label="Рабочие дни"/>
-                <h5 class="validationError" v-if="$v.startWork.$dirty && this.startWork > this.endWork && !this.vacation">
+                <h5 class="validationError" v-if="$v.startWork.$dirty && this.startWork >= this.endWork && !this.vacation
+                                                 && this.startWork && this.endWork">
                     Рабочий день не может начинатся позже чем заканчивается</h5>
                 <v-row align="center">
                     <v-col >
@@ -63,14 +64,14 @@
         name: "EmployeeDialog",
         props:['action','specName','spec','employee', 'user','clinics','clinicsName'],
         data: () => ({
-            dialog: false,  myEmployee: null, onlyChar: '^[а-яА-ЯёЁ ]+$',
-            id: '', name: '', clinic: '', position : '', education: '', vacation: null, employeeWorkDay : [],
-            employeeSpecName : [], times: [], timesValues:[], startWork:null, endWork:null,
+            dialog: false,  myEmployee: null, onlyChar: '^[а-яА-ЯёЁ ]+$', id: '', name: '',
+            clinic: '', clinicName:'', position : '', education: '', vacation: null, startWork:null,
+            employeeWorkDay : [], employeeSpecName : [], times: [], timesValues:[], endWork:null,
             daysName :['Понедельник','Вторник','Среда','Четверг', 'Пятница','Суббота','Воскресенье']
         }),
         validations:{
             name: {required}, education: {required}, employeeWorkDay: {}, position: {required},
-            employeeSpecName: {required}, clinic: {required}, startWork:{}, endWork:{}
+            employeeSpecName: {required}, clinicName: {required}, startWork:{}, endWork:{}
         },
         watch:{
             vacation: function (newTemplate, oldTemplate) {
@@ -89,7 +90,7 @@
                 this.position = this.employee.position;
                 this.education = this.employee.education;
                 if (this.user.role == 'ADMIN'){
-                    this.clinic = this.employee.clinic.name;
+                    this.clinicName = this.employee.clinic.name;
                 }
                 else {
                     this.clinic = this.employee.clinic;
@@ -119,16 +120,10 @@
                 this.dialog = false;
             },
             save(){
-                if (this.user.role == 'ADMIN'){
-                    this.clinic = getObjectByName(this.clinics,this.clinic);
-                }
-                else {
-                    this.clinic = this.user.clinic;
-                }
                 this.$v.$touch();
                 if (this.$v.$invalid || !this.name.match(this.onlyChar) || !this.position.match(this.onlyChar) ||
                     this.employeeWorkDay.length == 0 && !this.vacation || !this.startWork && !this.vacation ||
-                    !this.endWork && !this.vacation || this.startWork > this.endWork){
+                    !this.endWork && !this.vacation || this.startWork >= this.endWork){
                     return
                 }else {
                     let employeeSpecs = [];
@@ -143,17 +138,24 @@
                     this.employeeWorkDay.forEach(dayName=>{
                         employeeDays.push({id:null,dayName:dayName,employees:null});
                     })
+                    let startWortTime, endWorkTime;
                     this.times.forEach(element=>{
                         if (element.time == this.startWork){
-                            this.startWork = element;
+                            startWortTime = element;
                         }
                         else if (element.time == this.endWork){
-                            this.endWork = element;
+                            endWorkTime = element;
                         }
                     });
+                    if (this.user.role == 'ADMIN'){
+                        this.clinic = getObjectByName(this.clinics,this.clinicName);
+                    }
+                    else {
+                        this.clinic = this.user.clinic;
+                    }
                     let employee = {id : this.id ,name: this.name, position:this.position,clinic: this.clinic,
-                        education: this.education, specs: employeeSpecs,days:employeeDays, startWork: this.startWork,
-                        endWork: this.endWork, onVacation: this.vacation};
+                        education: this.education, specs: employeeSpecs,days:employeeDays, startWork: startWortTime,
+                        endWork: endWorkTime, onVacation: this.vacation};
                     if (this.action == "Добавить нового сотрудника"){
                         this.$http.post('/api/employee',employee).then(function (response) {
                             window.location.href = '/employee';

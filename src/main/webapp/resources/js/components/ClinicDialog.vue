@@ -50,13 +50,11 @@
         },
         updated(){
             if (this.myClinic != this.clinic) {
-                if (this.clinic.id) {
-                    this.id = this.clinic.id;
-                    this.name = this.clinic.name;
-                    this.description = this.clinic.description;
-                    this.city = this.clinic.city;
-                    this.address = this.clinic.address;
-                }
+                this.id = this.clinic.id;
+                this.name = this.clinic.name;
+                this.description = this.clinic.description;
+                this.city = this.clinic.city;
+                this.address = this.clinic.address;
                 this.myClinic = this.clinic;
             }
         },
@@ -66,7 +64,7 @@
             },
             temporarySave(){
                 this.$v.$touch();
-                if (this.$v.$invalid || !this.name.match('^[a-zA-Zа-яА-ЯёЁ0-9-   ]+$') ||
+                if (this.$v.$invalid || !this.name.match('^[a-zA-Zа-яА-ЯёЁ0-9- ]+$') ||
                     !this.city.match('^[а-яА-ЯёЁ ]+$') || !this.address.match('^[а-яА-ЯёЁ0-9 ]+$')){
                     return;
                 }else {

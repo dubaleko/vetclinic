@@ -8,9 +8,9 @@
                 <span class="headline" v-text="action"/>
             </v-card-title>
             <v-card-text>
-                <h5 class="validationError" v-if="!$v.clinic.required && $v.clinic.$dirty">
+                <h5 class="validationError" v-if="!$v.clinicName.required && $v.clinicName.$dirty">
                     Название клиники не может быть пустым</h5>
-                <v-select v-if="user.role == 'ADMIN'" v-model="clinic" :items="clinicsName" label="Название клиники"/>
+                <v-select v-if="user.role == 'ADMIN'" v-model="clinicName" :items="clinicsName" label="Название клиники"/>
                 <h5 class="validationError" v-if="!$v.serviceType.required && $v.serviceType.$dirty">
                     Тип услуги не может быть пустым</h5>
                 <v-select v-model="serviceType" :items="typeNames" label="Тип услуги"/>
@@ -40,29 +40,27 @@
         props:['action','types','typeNames','service','user','clinics','clinicsName'],
         name: "ServiceDialog",
         data: () => ({
-            dialog: false, id : '', myService: null,
-            serviceType : '', serviceName: '', serviceCost: '', clinic: ''
+            dialog: false, id : '', myService: null, serviceType : '',
+            serviceName: '', serviceCost: '', clinicName: '',clinic:''
         }),
         validations:{
             serviceType: {required},
             serviceName: {required},
             serviceCost: {required},
-            clinic: {required}
+            clinicName: {required}
         },
         updated(){
             if (this.myService != this.service) {
-                if (this.service.serviceType) {
-                    this.serviceType = this.service.serviceType.name;
-                    this.id = this.service.id;
-                    if (this.user.role == 'ADMIN'){
-                        this.clinic = this.service.clinic.name;
-                    }
-                    else {
-                        this.clinic = this.service.clinic;
-                    }
-                    this.serviceName = this.service.serviceName;
-                    this.serviceCost = this.service.serviceCost.toString();
+                this.serviceType = this.service.serviceType.name;
+                this.id = this.service.id;
+                if (this.user.role == 'ADMIN'){
+                    this.clinicName = this.service.clinic.name;
                 }
+                else {
+                    this.clinic = this.service.clinic;
+                }
+                this.serviceName = this.service.serviceName;
+                this.serviceCost = this.service.serviceCost.toString();
                 this.myService = this.service;
             }
         },
@@ -71,17 +69,17 @@
                 this.dialog = false;
             },
             save(){
-                if (this.user.role == 'ADMIN'){
-                    this.clinic = getObjectByName(this.clinics,this.clinic);
-                }
-                else {
-                    this.clinic = this.user.clinic;
-                }
                 this.$v.$touch();
                 if (this.$v.$invalid || !this.serviceName.match('^[а-яА-ЯёЁ0-9()-/ ]+$')
                     || !this.serviceCost.toString().match('^[0-9]*[.]?[0-9]+$')){
                     return
                 }else {
+                    if (this.user.role == 'ADMIN'){
+                        this.clinic = getObjectByName(this.clinics,this.clinicName);
+                    }
+                    else {
+                        this.clinic = this.user.clinic;
+                    }
                     let serviceType = getObjectByName(this.types,this.serviceType);
                     let service = {id : this.id ,serviceName: this.serviceName, serviceCost: this.serviceCost,
                         serviceType:serviceType, clinic: this.clinic}

@@ -9,12 +9,11 @@
             <v-btn text color="white" class="ml-2" href="/employee">Сотрудники</v-btn>
             <v-btn text color="white" class="ml-2" href="/order">Запись на прием</v-btn>
             <v-btn text color="white" class="ml-2" href="/talons">Талоны</v-btn>
-            <v-btn text color="white" class="ml-2" href="/pets">Питомцы</v-btn>
             <v-btn v-if="user && user.role == 'ADMIN'" text color="white" class="ml-2" href="/users">
                 Пользователи</v-btn>
             <v-spacer></v-spacer>
             <div v-if="user">
-                <span class="white--text">{{user.userName}}</span>
+                <v-btn text class="white--text" href="/me">{{user.userName}}</v-btn>
                 <v-btn color="white" href="/logout" icon>
                     <v-icon>exit_to_app</v-icon>
                 </v-btn>
@@ -39,6 +38,11 @@
             return{
                 user:null
             }
+        },
+        methods: {
+            consoleSome(){
+                console.log("SomeSHIT");
+            },
         },
         created() {
             this.$http.get('/api/users/current').then(function (response) {

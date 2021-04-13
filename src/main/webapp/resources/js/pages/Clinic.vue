@@ -2,11 +2,11 @@
     <v-container>
         <h1>Клиники</h1>
         <v-row v-if="user && user.role == 'ADMIN'">
-            <clinic-dialog :clinic="emptyClinic" action="Добавить новую клинику"/>
+            <clinic-dialog action="Добавить новую клинику"/>
         </v-row>
         <v-select v-model="searchCity" :items="cities" label="Город в котором расположена клиника"/>
         <v-row>
-            <v-card class="my-2" width="100%" v-for="clinic in clinics" :key="clinic.name">
+            <v-card class="my-2" width="100%" v-for="clinic in clinics" :key="clinic.id">
                 <v-card-title>{{clinic.name}}</v-card-title>
                 <v-card-text>
                     <h3>Адрес: {{clinic.city}}  {{clinic.address}}</h3>
@@ -41,8 +41,8 @@
         props:['user'],
         data(){
             return{
-                page : null, totalPages: null, searchCity: '', emptyClinics: false,
-                emptyClinic : {}, clinics : [], cities: []
+                page : null, totalPages: null, searchCity: '',
+                emptyClinics: false, clinics : [], cities: []
             }
         },
         watch: {
