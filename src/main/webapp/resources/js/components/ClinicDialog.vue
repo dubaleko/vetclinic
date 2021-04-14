@@ -29,7 +29,7 @@
             </v-card-text>
             <v-card-actions>
                 <v-btn color="blue darken-1" text @click="temporarySave">Сохранить</v-btn>
-                <v-btn color="blue darken-1" text @click="close">Закрыть</v-btn>
+                <v-btn color="blue darken-1" text @click="dialog=false">Закрыть</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -59,9 +59,6 @@
             }
         },
         methods : {
-            close(){
-                this.dialog = false;
-            },
             temporarySave(){
                 this.$v.$touch();
                 if (this.$v.$invalid || !this.name.match('^[a-zA-Zа-яА-ЯёЁ0-9- ]+$') ||

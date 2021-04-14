@@ -99,7 +99,7 @@
                     this.totalPages = response.body.pageCount;
                     this.page = response.body.page+1;
                     this.employees.forEach(element=>{
-                        element.url="/order?employee_id="+element.id;
+                        element.url="/order?employee="+element.id;
                     });
                     this.emptyEmployees = false;
                     if (this.employees.length < 1){

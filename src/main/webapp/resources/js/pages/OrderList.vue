@@ -4,19 +4,22 @@
     </v-container>
     <v-container v-else-if="user">
         <h1>Талоны</h1>
-        <table width="100%">
-            <tr class="bottom-border" v-for="order in orders" :key="order.id">
-                <td v-if="user.role == 'ADMIN'" align="left">{{order.user.userName}}</td>
-                <td align="left">{{order.employeeDto.name}}</td>
-                <td align="left">{{order.dateString}}</td>
-                <td>{{order.receptionTimeDto.time}}</td>
-                <td align="right">
+        <v-expansion-panels>
+            <v-expansion-panel class="mb-4" v-for="order in orders" :key="order.id">
+                <v-expansion-panel-header>
+                <div v-if="user.role != 'USER'">{{order.user.userName}}</div>
+                <div v-if="user.role != 'DOCTOR'">{{order.employeeDto.name}}</div>
+                {{order.receptionTimeDto.time}}<v-spacer/>
+                {{order.dateString}}
+                </v-expansion-panel-header>
+                <v-expansion-panel-content>
+                    <card  v-if="user.role != 'USER'" :order="order" :user="order.user"/>
                     <v-btn text @click="refuseOrder(order.id)">Отменить</v-btn>
-                </td>
-            </tr>
-        </table>
-        <v-row align="center" justify="center" v-if="orders.length < 1">
-            Извините но мы не смогли найти у вас талонов на прием к врачу
+                </v-expansion-panel-content>
+            </v-expansion-panel>
+        </v-expansion-panels>
+        <v-row justify="center" v-if="emptyOrders">
+            Извините но мы не смогли найти талонов на прием к врачу
         </v-row>
         <v-pagination v-if="totalPages > 1" @input="getOrderList" v-model="page" :length="totalPages" :total-visible="7"
                       prev-icon="arrow_back" next-icon="arrow_forward"></v-pagination>
@@ -25,13 +28,14 @@
 
 <script>
     import Authenticated from "../components/Authenticated.vue";
+    import Card from "../components/Card.vue";
     export default {
         name: "OrderList",
-        components: {Authenticated},
+        components: {Card, Authenticated},
         props:['user'],
         data(){
             return{
-                orders : [] ,flag : true,
+                orders : [] ,flag : true, emptyOrders: false,
                 page : null, totalPages: null,
             }
         },
@@ -44,10 +48,14 @@
                     this.orders = response.body.pageList;
                     this.totalPages = response.body.pageCount;
                     this.page = response.body.page+1;
-                    for (let i = 0; i< this.orders.length; i++){
-                        let date = new Date(this.orders[i].receptionDateDto.date);
-                        this.orders[i].dateString = date.toLocaleString("ru", options);
+                    this.emptyOrders = false;
+                    if (this.orders.length < 1){
+                        this.emptyOrders = true;
                     }
+                    this.orders.forEach(order=>{
+                        let date = new Date(order.receptionDateDto.date);
+                        order.dateString = date.toLocaleDateString("ru",options);
+                    })
                 })
             },
             refuseOrder(id){
@@ -66,5 +74,4 @@
 </script>
 
 <style scoped>
-    TD { border-bottom: 1px black dashed;}
 </style>

@@ -16,13 +16,13 @@
                     <template v-slot:activator="{ on, attrs }">
                         <v-text-field v-model="dateFormatted" label="Дата мероприятия" v-bind="attrs" v-on="on"/>
                     </template>
-                    <v-date-picker v-model="date" no-title :max="new Date().toISOString().substr(0, 10)" min="1950-01-01"
+                    <v-date-picker first-day-of-week="1" v-model="date" no-title :max="new Date().toISOString().substr(0, 10)" min="1950-01-01"
                             locale = "ru" @input="menu1 = false"/>
                 </v-menu>
             </v-card-text>
             <v-card-actions>
                 <v-btn color="blue darken-1" text @click="save">Сохранить</v-btn>
-                <v-btn color="blue darken-1" text @click="close">Закрыть</v-btn>
+                <v-btn color="blue darken-1" text @click="dialog=false">Закрыть</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -31,7 +31,6 @@
 <script>
     import {formatDate} from "../methods.js";
     import {required} from 'vuelidate/lib/validators'
-    import Me from "../pages/Me.vue";
     export default {
         props:['user','action','event'],
         name: "PetEventsDialog",
@@ -64,9 +63,6 @@
             this.dateFormatted = formatDate(new Date().toISOString().substr(0, 10));
         },
         methods :{
-            close(){
-                this.dialog = false;
-            },
             save(){
                 this.$v.$touch();
                 if (this.$v.$invalid){

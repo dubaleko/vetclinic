@@ -9,6 +9,7 @@
             <v-btn text color="white" class="ml-2" href="/employee">Сотрудники</v-btn>
             <v-btn text color="white" class="ml-2" href="/order">Запись на прием</v-btn>
             <v-btn text color="white" class="ml-2" href="/talons">Талоны</v-btn>
+            <v-btn v-if="user && user.role != 'USER'" text color="white" class="ml-2" href="/visitLog">Журнал</v-btn>
             <v-btn v-if="user && user.role == 'ADMIN'" text color="white" class="ml-2" href="/users">
                 Пользователи</v-btn>
             <v-spacer></v-spacer>

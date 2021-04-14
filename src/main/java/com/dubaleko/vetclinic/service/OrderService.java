@@ -2,10 +2,9 @@ package com.dubaleko.vetclinic.service;
 
 import com.dubaleko.vetclinic.comparators.OrderComparator;
 import com.dubaleko.vetclinic.dto.*;
-import com.dubaleko.vetclinic.entity.ClinicOrder;
-import com.dubaleko.vetclinic.entity.ReceptionTime;
-import com.dubaleko.vetclinic.entity.User;
+import com.dubaleko.vetclinic.entity.*;
 import com.dubaleko.vetclinic.entity.enums.Role;
+import com.dubaleko.vetclinic.repository.EmployeeRepository;
 import com.dubaleko.vetclinic.repository.OrderRepository;
 import com.dubaleko.vetclinic.repository.ReceptionTimeRepository;
 import com.dubaleko.vetclinic.repository.UserRepository;
@@ -27,23 +26,34 @@ import java.util.List;
 public class OrderService {
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
+    private final EmployeeRepository employeeRepository;
     private final ReceptionTimeRepository receptionTimeRepository;
 
-    public OrderService(UserRepository userRepository, OrderRepository orderRepository,
-                        ReceptionTimeRepository receptionTimeRepository) {
+    public OrderService(UserRepository userRepository,ReceptionTimeRepository receptionTimeRepository,
+                        OrderRepository orderRepository, EmployeeRepository employeeRepository) {
         this.userRepository = userRepository;
         this.orderRepository = orderRepository;
+        this.employeeRepository = employeeRepository;
         this.receptionTimeRepository = receptionTimeRepository;
     }
 
     public PagedListHolder<OrderDto> getAllOrdersByUserId(long id, int  page){
-        List<ClinicOrder> clinicOrders;
+        List<ClinicOrder> clinicOrders = new ArrayList<>();
         User user = userRepository.getOne(id);
         if (user.getRole().equals(Role.ADMIN)){
             clinicOrders = orderRepository.findAll();
         }
+        else if (user.getRole().equals(Role.DOCTOR)){
+            clinicOrders = orderRepository.findAllByEmployee(user.getDoctor());
+        }
+        else if (user.getRole().equals(Role.MODERATOR)){
+            List<Employee> employees = employeeRepository.getByClinic(user.getClinic());
+            for (Employee employee : employees){
+                clinicOrders.addAll(orderRepository.findAllByEmployee(employee));
+            }
+        }
         else{
-            clinicOrders = orderRepository.findAllByUser(userRepository.getOne(id));
+            clinicOrders = orderRepository.findAllByUser(user);
         }
         List<OrderDto> orderDtos = getDtosList(clinicOrders);
         PagedListHolder<OrderDto> pagedListHolder = new PagedListHolder<OrderDto>(orderDtos);

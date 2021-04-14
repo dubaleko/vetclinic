@@ -11,7 +11,7 @@
         <div class="mb-2"/>
         <v-btn  color="blue" class="white--text" href="/service">Просмотреть все услуги</v-btn>
         <h1>Клиники</h1>
-        <v-card class="my-2" width="100%" v-for="clinic in clinicPreview" :key="clinic.id">
+        <v-card class="my-2" width="100%" v-for="clinic in clinicPreview" :key="clinic.name">
             <v-card-title>{{clinic.name}}</v-card-title>
             <v-card-text>
                 <h3>Адрес: {{clinic.city}}  {{clinic.address}}</h3>

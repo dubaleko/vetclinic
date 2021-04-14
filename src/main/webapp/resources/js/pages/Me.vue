@@ -11,7 +11,7 @@
         <v-tabs-items v-model="tab">
             <v-tab-item>
                 <v-card flat>
-                    <v-card-title><h2>Основная информация о питомце</h2></v-card-title>
+                    <v-card-title><h3>Основная информация о питомце</h3></v-card-title>
                     <v-card-text>
                         <h5 class="validationError" v-if="!$v.petName.required && $v.petName.$dirty">
                             Кличка животного не может быть пустой</h5>
@@ -56,32 +56,10 @@
                 </v-card>
             </v-tab-item>
             <v-tab-item>
-                <v-card flat>
-                    <v-card-title><h2>Мероприятия проводимые с питомцем</h2></v-card-title>
-                    <v-card-text>
-                        <pet-events-dialog :user="user" action="Добавить новое мероприятие"/>
-                        <table v-for="petEvent in petEvents" :key="petEvent.id">
-                            <tr class="bottom-border">
-                                <td align="left">{{petEvent.name}}</td>
-                                <td align="left">{{petEvent.dateFormatted}}</td>
-                                <td align="right">
-                                   <pet-events-dialog :event="petEvent" :user="user" action="Обновить"/>
-                                    <v-btn text @click="deletePetEvent(petEvent.id)">Удалить</v-btn>
-                                </td>
-                            </tr>
-                        </table>
-                        <v-row align="center" justify="center" v-if="emptyEvents">
-                            Вы еще не добавили информацию о мероприятиях проводимых с питомцем
-                        </v-row>
-                        <v-pagination v-if="totalEventPages > 1" @input="getAllEvents" v-model="eventPage" :length="totalEventPages" :total-visible="7"
-                                      prev-icon="arrow_back" next-icon="arrow_forward"></v-pagination>
-                    </v-card-text>
-                </v-card>
+                <pet-event :show="true" :user="this.user"/>
             </v-tab-item>
             <v-tab-item>
-                <v-card flat>
-
-                </v-card>
+                <visit-history :user="this.user"/>
             </v-tab-item>
         </v-tabs-items>
     </v-container>
@@ -89,18 +67,17 @@
 
 <script>
     import Authenticated from "../components/Authenticated.vue";
-    import PetEventsDialog from "../components/PetEventsDialog.vue";
     import {required ,numeric} from 'vuelidate/lib/validators'
-    import {formatDate} from "../methods.js";
+    import VisitHistory from "../components/VisitHistory.vue";
+    import PetEvent from "../components/PetEvent.vue";
     export default {
         name: "Me",
-        components: {PetEventsDialog, Authenticated},
+        components: {PetEvent, VisitHistory, Authenticated},
         data(){
             return{
                 tab: '', items:[ 'Основные','Проводимые мероприятия', 'История посещений'],
                 onlyChar: '^[а-яА-ЯёЁ ]+$',  user:'', gender:'', petName: '', type : '', age: '',
-                ownerName: '', ownerSecondName:'', petEvents:[], emptyEvents:false, eventPage : null,
-                totalEventPages: null,
+                ownerName: '', ownerSecondName:'',
             }
         },
         validations:{
@@ -108,27 +85,6 @@
             gender: {required}, ownerName:{required}, ownerSecondName: {required}
         },
         methods:{
-            deletePetEvent(id){
-                this.$http.delete('/api/petEvent?id='+id).then(function (response) {
-                    window.location.href = '/me';
-                })
-            },
-            getAllEvents(page){
-                if (!page)
-                    page = 1;
-                this.$http.get('/api/petEvent?id='+this.user.id+'&page='+page).then(function (response) {
-                    this.petEvents = response.data.content;
-                    this.totalEventPages = response.data.totalPages;
-                    this.eventPage = response.data.pageable.pageNumber+1;
-                    this.emptyEvents = false;
-                    if (this.petEvents.length < 1){
-                        this.emptyEvents = true;
-                    }
-                    this.petEvents.forEach(element=>{
-                        element.dateFormatted = formatDate(element.date);
-                    })
-                })
-            },
             setValue(){
                 this.petName = this.user.petName;
                 this.type = this.user.petType;
@@ -159,7 +115,6 @@
                 if (response.data.userName != null){
                     this.user = response.data;
                     this.setValue();
-                    this.getAllEvents();
                 }
             });
         }
@@ -168,8 +123,4 @@
 
 <style scoped>
     .validationError{color: red;}
-    table {width: 100%;}
-    TD { border-bottom: 1px black dashed;}
-    TD:first-child{width: 70%}
-    TD:nth-child{width: 15%}
 </style>

@@ -110,8 +110,8 @@ public class EmployeeService {
                 receptionDateService.updateReceptionAndDate(addDays, deleteDays, employee);
             }
             Employee oldEmployee = employeeRepository.getOne(employee.getId());
-            if (employee.getStartWork() != oldEmployee.getStartWork()
-                    || employee.getEndWork() != oldEmployee.getEndWork()){
+            if (!employee.getStartWork().equals(oldEmployee.getStartWork())
+                    || !employee.getEndWork().equals(oldEmployee.getEndWork())){
                 receptionDateService.updateReceptionAndDate(newDays,oldDays,employee);
             }
         }

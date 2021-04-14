@@ -11,7 +11,7 @@
                 <h4 class="validationError"  v-if="responseCode == 409" v-text="responseStatus"/>
                 <h6 class="validationError" v-if="!$v.userName.required && $v.userName.$dirty">Поле имя не может быть пустым</h6>
                 <h6 class="validationError" v-else-if="$v.userName.$dirty && !$v.userName.minLength">Минимальная длина имени 4 символа</h6>
-                <h6 class="validationError" v-else-if="$v.userName.$dirty && !userName.match('^[а-яА-ЯёЁa-zA-Z0-9]+$')">Им может состоять только из букв и цифр</h6>
+                <h6 class="validationError" v-else-if="$v.userName.$dirty && !userName.match('^[а-яА-ЯёЁa-zA-Z0-9 ]+$')">Им может состоять только из букв и цифр</h6>
                 <v-text-field label="Имя пользователя" placeholder="Введите имя пользователя" v-model.trim="userName"/>
                 <h6 class="validationError" v-if="!$v.password.required && $v.password.$dirty">Поле пароль не может быть пустым</h6>
                 <h6 class="validationError" v-else-if="$v.password.$dirty && !$v.password.minLength">Минимальная длина пароля 6 символов</h6>
@@ -19,7 +19,7 @@
             </v-card-text>
             <v-card-actions>
                 <v-btn color="blue darken-1" text @click="reg()">Зарегистрироваться</v-btn>
-                <v-btn color="blue darken-1" text @click="close">Закрыть</v-btn>
+                <v-btn color="blue darken-1" text @click="dialog=false">Закрыть</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -38,12 +38,9 @@
             password: {required, minLength: minLength(6)}
         },
         methods:{
-            close(){
-                this.dialog = false;
-            },
             reg(){
                 this.$v.$touch()
-                if (this.$v.$invalid || !this.userName.match('^[а-яА-ЯёЁa-zA-Z0-9]+$')){
+                if (this.$v.$invalid || !this.userName.match('^[а-яА-ЯёЁa-zA-Z0-9 ]+$')){
                     return
                 }
                 else {

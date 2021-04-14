@@ -1,8 +1,6 @@
 <template>
     <v-container fill-height v-if="user == null || user.role != 'ADMIN'">
-        <v-row justify="center">
-            Извините, нам не удалось найти эту страницу, но мы бросим все силы что бы найти её
-        </v-row>
+        <not-found/>
     </v-container>
     <v-container v-else>
         <h1>Пользователи</h1>
@@ -27,9 +25,10 @@
 
 <script>
     import UserDialog from "../components/UserDialog.vue";
+    import NotFound from "./NotFound.vue";
     export default {
         name: "Users",
-        components: {UserDialog},
+        components: {NotFound, UserDialog},
         props:['user'],
         data(){
             return {

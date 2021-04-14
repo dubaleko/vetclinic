@@ -27,7 +27,7 @@
             </v-card-text>
             <v-card-actions>
                 <v-btn color="blue darken-1" text @click="save">Сохранить</v-btn>
-                <v-btn color="blue darken-1" text @click="close">Закрыть</v-btn>
+                <v-btn color="blue darken-1" text @click="dialog=false">Закрыть</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -65,21 +65,19 @@
             }
         },
         methods :{
-            close(){
-                this.dialog = false;
-            },
             save(){
+                if (this.user.role == 'ADMIN'){
+                    this.clinic = getObjectByName(this.clinics,this.clinicName);
+                }
+                else {
+                    this.clinicName = 'Имя';
+                    this.clinic = this.user.clinic;
+                }
                 this.$v.$touch();
                 if (this.$v.$invalid || !this.serviceName.match('^[а-яА-ЯёЁ0-9()-/ ]+$')
                     || !this.serviceCost.toString().match('^[0-9]*[.]?[0-9]+$')){
                     return
                 }else {
-                    if (this.user.role == 'ADMIN'){
-                        this.clinic = getObjectByName(this.clinics,this.clinicName);
-                    }
-                    else {
-                        this.clinic = this.user.clinic;
-                    }
                     let serviceType = getObjectByName(this.types,this.serviceType);
                     let service = {id : this.id ,serviceName: this.serviceName, serviceCost: this.serviceCost,
                         serviceType:serviceType, clinic: this.clinic}

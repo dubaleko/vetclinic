@@ -9,6 +9,7 @@ import Users from "./pages/Users.vue";
 import Order from "./pages/Order.vue";
 import Clinic from "./pages/Clinic.vue";
 import Me from "./pages/Me.vue";
+import VisitLog from "./pages/VisitLog.vue";
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,7 @@ const routes = [
     {path: '/talons',component:OrderList},
     {path: '/users', component: Users},
     {path: '/me',component: Me},
+    {path: '/visitLog', component: VisitLog},
     { path: '*', component:NotFound}
 ]
 
