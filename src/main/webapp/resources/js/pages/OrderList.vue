@@ -19,7 +19,7 @@
             </v-expansion-panel>
         </v-expansion-panels>
         <v-row justify="center" v-if="emptyOrders">
-            Извините но мы не смогли найти талонов на прием к врачу
+            К сожалению, нам не удалось найти информацию о записи на прием
         </v-row>
         <v-pagination v-if="totalPages > 1" @input="getOrderList" v-model="page" :length="totalPages" :total-visible="7"
                       prev-icon="arrow_back" next-icon="arrow_forward"></v-pagination>

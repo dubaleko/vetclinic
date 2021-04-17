@@ -18,7 +18,7 @@
                 </v-col>
             </v-row>
             <v-row  align="center" justify="center" v-if="emptyTimes">
-                Извините но мы не смогли найти запрашиваемые вами данные
+                К сожалению, нам не удалось найти запрашиваемые вами данные
             </v-row>
         </div>
         <div v-else-if ="employeeId">
@@ -32,7 +32,7 @@
                 </v-col>
             </v-row>
             <v-row  align="center" justify="center" v-if="emptyDates">
-                Извините но на данный момент у этого врача нельзя записаться на прием онлайн
+                К сожалению, на данный момет запись у этого врача не доступна
             </v-row>
         </div>
         <div v-else>
@@ -62,7 +62,7 @@
                 </v-col>
             </v-row>
             <v-row align="center" justify="center" v-if="emptyEmpls">
-                Извините но по вашему запросу не найдено сотрудников клиник партнеров
+                Извините, но по вашему запросу не найдено сотрудников клиник партнеров
             </v-row>
             <v-pagination v-if="totalPages > 1" @input="getAllEmployees" v-model="page" :length="totalPages" :total-visible="7"
                           prev-icon="arrow_back" next-icon="arrow_forward"></v-pagination>
@@ -195,4 +195,5 @@
 </script>
 
 <style scoped>
+
 </style>

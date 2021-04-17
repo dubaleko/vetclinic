@@ -91,8 +91,6 @@ public class EmployeeService {
             weekDays.add(weekDayRepository.getByDayName(weekDay.getDayName()));
         }
         employee.setDays(weekDays);
-        employeeRepository.save(employee);
-
         List<ReceptionDate> receptionDates = receptionDateRepository.findAllByEmployee(employee);
         if (receptionDates.size() < 1){
             ArrayList <Employee> employees = new ArrayList<Employee>();
@@ -115,6 +113,7 @@ public class EmployeeService {
                 receptionDateService.updateReceptionAndDate(newDays,oldDays,employee);
             }
         }
+        employeeRepository.save(employee);
     }
 
     public void  deleteEmployeeById(Long id){

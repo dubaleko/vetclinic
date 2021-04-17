@@ -3,7 +3,7 @@
         <not-found/>
     </v-container>
     <v-container v-else>
-        <h1>Журнал амбулаторного лечения животных</h1>
+        <h1>Амбулаторный журнал</h1>
         <v-expansion-panels>
             <v-expansion-panel class="mb-4"  v-for="visit in visits" :key="visit.id">
                 <v-expansion-panel-header>

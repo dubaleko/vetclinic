@@ -19,15 +19,16 @@
 
 <style scoped>
     .centerDiv{
+        font-size: 20px;
         position: absolute;
-        top: 40%;
-        left: 50%;
+        top: 44%;
+        left: 51%;
         margin-right: -45%;
         transform: translate(-50%, -50%)
     }
     .littleDiv{
         position: absolute;
         top: 200%;
-        left: 25%;
+        left: 32%;
     }
 </style>

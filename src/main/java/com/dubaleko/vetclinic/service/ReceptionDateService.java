@@ -53,31 +53,41 @@ public class ReceptionDateService {
 
     public List<ReceptionDateDto> getAllDateByEmployeeId(Long id){
         List<ReceptionDate> receptionDates = receptionDateRepository.findAllByEmployee(employeeRepository.getOne(id));
-        EmployeeDto employeeDto = new EmployeeDto();
-        new ModelMapper().map(receptionDates.get(0).getEmployee(),employeeDto);
-        List<ReceptionDateDto> receptionDateDtos = receptionDates.stream().map(user -> new ModelMapper().
-                map(user, ReceptionDateDto.class)).collect(Collectors.toList());
-        for (ReceptionDateDto receptionDateDto : receptionDateDtos){
-            receptionDateDto.setEmployeeDto(employeeDto);
+        if(receptionDates.size() > 0) {
+            EmployeeDto employeeDto = new EmployeeDto();
+            new ModelMapper().map(receptionDates.get(0).getEmployee(), employeeDto);
+            List<ReceptionDateDto> receptionDateDtos = receptionDates.stream().map(user -> new ModelMapper().
+                    map(user, ReceptionDateDto.class)).collect(Collectors.toList());
+            for (ReceptionDateDto receptionDateDto : receptionDateDtos) {
+                receptionDateDto.setEmployeeDto(employeeDto);
+            }
+            Collections.sort(receptionDateDtos, new DateComparator());
+            return receptionDateDtos;
         }
-        Collections.sort(receptionDateDtos, new DateComparator());
-        return receptionDateDtos;
+        else {
+            return new ArrayList<>();
+        }
     }
 
     public List<ReceptionTimeDto> getAllTimeByDateId(Long id) {
         List<ReceptionTime> receptionTimes = receptionTimeRepository.findAllByDate(receptionDateRepository.getOne(id));
-        EmployeeDto employeeDto = new EmployeeDto();
-        ReceptionDateDto receptionDateDto = new ReceptionDateDto();
-        new ModelMapper().map(receptionTimes.get(0).getDate(),receptionDateDto);
-        new ModelMapper().map(receptionTimes.get(0).getDate().getEmployee(),employeeDto);
-        receptionDateDto.setEmployeeDto(employeeDto);
-        List<ReceptionTimeDto> receptionTimeDtos = receptionTimes.stream().map(user -> new ModelMapper().
-                map(user, ReceptionTimeDto.class)).collect(Collectors.toList());
-        for (ReceptionTimeDto receptionTimeDto : receptionTimeDtos){
-            receptionTimeDto.setReceptionDateDto(receptionDateDto);
+        if (receptionTimes.size() > 0) {
+            EmployeeDto employeeDto = new EmployeeDto();
+            ReceptionDateDto receptionDateDto = new ReceptionDateDto();
+            new ModelMapper().map(receptionTimes.get(0).getDate(), receptionDateDto);
+            new ModelMapper().map(receptionTimes.get(0).getDate().getEmployee(), employeeDto);
+            receptionDateDto.setEmployeeDto(employeeDto);
+            List<ReceptionTimeDto> receptionTimeDtos = receptionTimes.stream().map(user -> new ModelMapper().
+                    map(user, ReceptionTimeDto.class)).collect(Collectors.toList());
+            for (ReceptionTimeDto receptionTimeDto : receptionTimeDtos) {
+                receptionTimeDto.setReceptionDateDto(receptionDateDto);
+            }
+            Collections.sort(receptionTimeDtos, new TimeComparator());
+            return receptionTimeDtos;
         }
-        Collections.sort(receptionTimeDtos, new TimeComparator());
-        return  receptionTimeDtos;
+        else {
+            return new ArrayList<>();
+        }
     }
 
     public void updateReceptionAndDate(List<WeekDayDto> add,List<WeekDayDto> delete, Employee employee){

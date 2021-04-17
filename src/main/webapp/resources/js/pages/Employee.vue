@@ -40,8 +40,8 @@
             <v-pagination v-if="totalPages > 1" @input="getAllEmployees" v-model="page" :length="totalPages" :total-visible="7"
                           prev-icon="arrow_back" next-icon="arrow_forward"></v-pagination>
         </v-row>
-        <v-row align="center" justify="center" v-if="emptyEmployees">
-            Извините но по вашему запросу не найдено сотрудников клиник партнеров
+        <v-row  justify="center" v-if="emptyEmployees">
+            К сожалению, по вашему запросу не найдено сотрудников клиник партнеров
         </v-row>
     </v-container>
 </template>
