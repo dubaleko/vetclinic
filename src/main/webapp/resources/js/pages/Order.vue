@@ -105,7 +105,7 @@
             getAllEmployees(page){
                 if(!page)
                     page = 1;
-                let url = '/api/employee?page='+page
+                let url = '/api/employee?page='+page+'&size=12';
                 url += checkQueryParameter(this.employeeSpec,this.spec,this.$route.query.spec,
                     'spec','Все специальности');
                 if (!this.spec && this.$route.query.spec){
