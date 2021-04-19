@@ -7,14 +7,14 @@ import Notifications from 'vue-notification'
 import App from "./pages/App.vue";
 import 'vuetify/dist/vuetify.min.css'
 
-Vue.use(Vuetify)
-Vue.use(Vuelidate)
-Vue.use(VueResource)
-Vue.use(Notifications)
+Vue.use(Vuetify);
+Vue.use(Vuelidate);
+Vue.use(VueResource);
+Vue.use(Notifications);
 
 new Vue({
     el: '#app',
     router,
     vuetify: new Vuetify(),
     render: a => a(App),
-})
+});

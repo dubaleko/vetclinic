@@ -85,32 +85,39 @@ public class EmployeeService {
         return employeeDtos;
     }
 
-    public void save(Employee employee){
+    public void save(Employee employee) {
         Set<WeekDay> weekDays = new HashSet<>();
-        for (WeekDay weekDay : employee.getDays()){
+        for (WeekDay weekDay : employee.getDays()) {
             weekDays.add(weekDayRepository.getByDayName(weekDay.getDayName()));
         }
         employee.setDays(weekDays);
-        List<ReceptionDate> receptionDates = receptionDateRepository.findAllByEmployee(employee);
-        if (receptionDates.size() < 1){
-            ArrayList <Employee> employees = new ArrayList<Employee>();
-            employees.add(employee);
-            receptionDateService.saveNewReceptionDateAndTime(7,employees);
+        employeeRepository.save(employee);
+        ArrayList<Employee> employees = new ArrayList<Employee>();
+        employees.add(employee);
+        receptionDateService.saveNewReceptionDateAndTime(7, employees);
+    }
+
+    public void update(Employee employee){
+        Set<WeekDay> weekDays = new HashSet<>();
+        for (WeekDay weekDay : employee.getDays()) {
+            weekDays.add(weekDayRepository.getByDayName(weekDay.getDayName()));
         }
-        else {
-            List<WeekDayDto> newDays = weekDays.stream().map(user -> new ModelMapper().
-                    map(user, WeekDayDto.class)).collect(Collectors.toList());
-            Collections.sort(newDays,new DayComparator());
-            List<WeekDayDto> oldDays =  receptionDateService.getDifferentDays(employee);
-            List<WeekDayDto> addDays = checkDays(newDays,oldDays);
-            List<WeekDayDto> deleteDays = checkDays(oldDays,newDays);
-            if (addDays.size() != 0 || deleteDays.size() != 0) {
-                receptionDateService.updateReceptionAndDate(addDays, deleteDays, employee);
-            }
+        employee.setDays(weekDays);
+        List<WeekDayDto> newDays = weekDays.stream().map(user -> new ModelMapper().
+                map(user, WeekDayDto.class)).collect(Collectors.toList());
+        Collections.sort(newDays,new DayComparator());
+        List<WeekDayDto> oldDays =  receptionDateService.getDifferentDays(employee);
+        List<WeekDayDto> addDays = checkDays(newDays,oldDays);
+        List<WeekDayDto> deleteDays = checkDays(oldDays,newDays);
+        if (addDays.size() != 0 || deleteDays.size() != 0) {
+            receptionDateService.updateReceptionAndDate(addDays, deleteDays, employee);
+        }
+        if (!employee.getOnVacation()) {
+            List<WeekDayDto> unchangedDaysDto = checkDays(newDays, addDays);
             Employee oldEmployee = employeeRepository.getOne(employee.getId());
             if (!employee.getStartWork().equals(oldEmployee.getStartWork())
-                    || !employee.getEndWork().equals(oldEmployee.getEndWork())){
-                receptionDateService.updateReceptionAndDate(newDays,oldDays,employee);
+                    || !employee.getEndWork().equals(oldEmployee.getEndWork())) {
+                receptionDateService.updateReceptionAndDate(unchangedDaysDto, oldDays, employee);
             }
         }
         employeeRepository.save(employee);

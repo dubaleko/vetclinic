@@ -65,7 +65,7 @@
         props:['action','specName','spec','employee', 'user','clinics','clinicsName'],
         data: () => ({
             dialog: false,  myEmployee: null, onlyChar: '^[а-яА-ЯёЁ ]+$', id: '', name: '',
-            clinic: '', clinicName:'', position : '', education: '', vacation: null, startWork:null,
+            clinic: '', clinicName:'', position : '', education: '', vacation: false, startWork:null,
             employeeWorkDay : [], employeeSpecName : [], times: [], timesValues:[], endWork:null,
             daysName :['Понедельник','Вторник','Среда','Четверг', 'Пятница','Суббота','Воскресенье']
         }),
@@ -127,7 +127,7 @@
                 this.$v.$touch();
                 if (this.$v.$invalid || !this.name.match(this.onlyChar) || !this.position.match(this.onlyChar) ||
                     this.employeeWorkDay.length == 0 && !this.vacation || !this.startWork && !this.vacation ||
-                    !this.endWork && !this.vacation || this.startWork >= this.endWork){
+                    !this.endWork && !this.vacation || this.startWork >= this.endWork  && !this.vacation ){
                     return
                 }else {
                     let employeeSpecs = [];

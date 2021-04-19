@@ -52,7 +52,7 @@ public class EmployeeController {
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public void  updateEmployee(@RequestBody Employee employee){
-        employeeService.save(employee);
+        employeeService.update(employee);
     }
 
     @DeleteMapping

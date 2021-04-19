@@ -11,7 +11,7 @@ import Clinic from "./pages/Clinic.vue";
 import Me from "./pages/Me.vue";
 import VisitLog from "./pages/VisitLog.vue";
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
     { path: '/', component: Main },
@@ -24,7 +24,7 @@ const routes = [
     {path: '/me',component: Me},
     {path: '/visitLog', component: VisitLog},
     { path: '*', component:NotFound}
-]
+];
 
 export default new VueRouter({
     mode: 'history',
