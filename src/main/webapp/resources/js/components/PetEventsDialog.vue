@@ -11,6 +11,8 @@
                 <h5 class="validationError" v-if="!$v.name.required && $v.name.$dirty">
                     Название мероприятия не может быть пустым</h5>
                 <v-text-field v-model="name" label="Название мероприятия"/>
+                <h5 class="validationError" v-if="!$v.dateFormatted.required && $v.dateFormatted.$dirty">
+                    Дата проведения мероприятия не может быть пустой</h5>
                 <v-menu v-model="menu" :close-on-content-click="false" transition="scale-transition"
                         offset-y max-width="290px" min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
@@ -49,7 +51,8 @@
             }
         },
         validations:{
-            name: {required}
+            name: {required},
+            dateFormatted:{required}
         },
         watch: {
             date: function (newTemplate, oldTemplate) {
