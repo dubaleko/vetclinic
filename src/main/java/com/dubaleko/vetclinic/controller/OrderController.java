@@ -28,7 +28,7 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public  boolean  addNewEmployee(@RequestBody ClinicOrder clinicOrder, final HttpServletResponse response) throws IOException {
+    public  boolean  saveOrder(@RequestBody ClinicOrder clinicOrder, final HttpServletResponse response) throws IOException {
         return  orderService.saveOrder(clinicOrder, response);
     }
 

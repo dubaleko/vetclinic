@@ -63,7 +63,7 @@ function checkQueryParameter(elements,element,query,page,text) {
 function formatDate (date) {
     if (!date) return null
     const [year, month, day] = date.split('-')
-    return `${month}/${day}/${year}`
+    return `${day}/${month}/${year}`
 }
 
 export {getIdByName, getObjectByName, getVariableFromQuery,pushNewState, checkQueryParameter, formatDate}
