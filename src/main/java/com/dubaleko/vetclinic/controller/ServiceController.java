@@ -23,32 +23,32 @@ public class ServiceController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page list(@RequestParam int page, @RequestParam Optional<Long> serviceType,
+    public Page getServices(@RequestParam int page, @RequestParam Optional<Long> serviceType,
                      @RequestParam Optional<Long> clinic){
         return  service.getServices(page, serviceType, clinic);
     }
 
     @GetMapping("preview")
     @ResponseStatus(HttpStatus.OK)
-    public List<Service> getFive(){
+    public List<Service> getPreviewService(){
         return serviceRepository.findSixService();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void create(@RequestBody Service service)  {
+    public void addNewService(@RequestBody Service service)  {
         serviceRepository.save(service);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public void edit(@RequestBody Service service){
+    public void editService(@RequestBody Service service){
         serviceRepository.save(service);
     }
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@RequestParam long id){
+    public void deleteService(@RequestParam long id){
         serviceRepository.deleteById(id);
     }
 }

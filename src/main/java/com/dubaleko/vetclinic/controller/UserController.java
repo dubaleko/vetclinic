@@ -40,13 +40,13 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public boolean create(@RequestBody User user, final HttpServletResponse response) throws IOException {
+    public boolean saveUser(@RequestBody User user, final HttpServletResponse response) throws IOException {
         return  userDetailService.saveUser(user, response);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public void update(@RequestBody User user){
+    public void updateUser(@RequestBody User user){
         userRepository.save(user);
     }
 
