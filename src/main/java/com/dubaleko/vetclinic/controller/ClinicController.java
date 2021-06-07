@@ -62,13 +62,13 @@ public class ClinicController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public void edit(@RequestBody Clinic clinic){
+    public void editClinic(@RequestBody Clinic clinic){
         clinicRepository.save(clinic);
     }
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@RequestParam long id){
+    public void deleteClinic(@RequestParam long id){
         clinicService.deleteClinicById(id);
     }
 }

@@ -42,7 +42,7 @@ public class VisitHistoryController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public void saveNewEvent(@RequestBody VisitHistory visitHistory, @RequestParam Long orderId){
         orderService.refuseOrder(orderId);
         visitHistoryRepository.save(visitHistory);

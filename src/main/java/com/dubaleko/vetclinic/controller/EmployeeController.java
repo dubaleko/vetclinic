@@ -57,7 +57,7 @@ public class EmployeeController {
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@RequestParam long id){
+    public void deleteEmployee(@RequestParam long id){
         employeeService.deleteEmployeeById(id);
     }
 }

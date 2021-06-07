@@ -25,7 +25,7 @@ public class PetEventController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public void saveNewEvent(@RequestBody PetEvent petEvent){
         petEventRepository.save(petEvent);
     }
