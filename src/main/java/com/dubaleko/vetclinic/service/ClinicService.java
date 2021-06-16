@@ -32,6 +32,12 @@ public class ClinicService {
         }
         List<Employee> employees = employeeRepository.getByClinic(clinicRepository.getClinicById(id));
         for (Employee employee : employees){
+            users = userRepository.findAllByEmployee(employee);
+            for (User user : users){
+                user.setRole(Role.USER);
+                user.setDoctor(null);
+                userRepository.save(user);
+            }
             employeeRepository.delete(employee);
         }
         clinicRepository.deleteById(id);
